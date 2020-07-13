@@ -1,0 +1,8 @@
+*.iml
+.idea
+.github.idea
+.gradle
+build
+release
+randomizeProGuardTXT.sh
+config
