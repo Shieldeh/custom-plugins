@@ -7,7 +7,6 @@ import java.time.Duration;
 import java.time.Instant;
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import static net.runelite.api.MenuOpcode.RUNELITE_OVERLAY_CONFIG;
 import static net.runelite.client.ui.overlay.OverlayManager.OPTION_CONFIGURE;
@@ -53,34 +52,40 @@ class leaguesZMIOverlay extends OverlayPanel
 
 		Duration duration = Duration.between(plugin.botTimer, Instant.now());
 		timeFormat = (duration.toHours() < 1) ? "mm:ss" : "HH:mm:ss";
-		tableComponent.addRow("Time running:", formatDuration(duration.toMillis(),timeFormat));
+		tableComponent.addRow("Time running:", formatDuration(duration.toMillis(), timeFormat));
 		if (plugin.state != null)
 		{
 			if (!plugin.state.name().equals("TIMEOUT"))
+			{
 				infoStatus = plugin.state.name();
+			}
 		}
 		tableComponent.addRow("Status:", infoStatus);
 
-		TableComponent tableDelayComponent = new TableComponent();
-		tableDelayComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
-		tableDelayComponent.addRow("Sleep delay:", plugin.sleepLength + "ms");
-		tableDelayComponent.addRow("Tick delay:", String.valueOf(plugin.timeout));
 
 		if (!tableComponent.isEmpty())
 		{
 			panelComponent.setBackgroundColor(ColorUtil.fromHex("#66121212"));
-			panelComponent.setPreferredSize(new Dimension(200,200));
-			panelComponent.setBorder(new Rectangle(5,5,5,5));
+			panelComponent.setPreferredSize(new Dimension(200, 200));
+			panelComponent.setBorder(new Rectangle(5, 5, 5, 5));
 			panelComponent.getChildren().add(TitleComponent.builder()
 				.text("Leagues - ZMI")
 				.color(ColorUtil.fromHex("#00FFA0"))
 				.build());
 			panelComponent.getChildren().add(tableComponent);
-			panelComponent.getChildren().add(TitleComponent.builder()
-				.text("Delays")
-				.color(ColorUtil.fromHex("#F8BBD0"))
-				.build());
-			panelComponent.getChildren().add(tableDelayComponent);
+			if (!config.hideDelays())
+			{
+				TableComponent tableDelayComponent = new TableComponent();
+				tableDelayComponent.setColumnAlignments(TableAlignment.LEFT, TableAlignment.RIGHT);
+				tableDelayComponent.addRow("Sleep delay:", plugin.sleepLength + "ms");
+				tableDelayComponent.addRow("Tick delay:", String.valueOf(plugin.timeout));
+
+				panelComponent.getChildren().add(TitleComponent.builder()
+					.text("Delays")
+					.color(ColorUtil.fromHex("#F8BBD0"))
+					.build());
+				panelComponent.getChildren().add(tableDelayComponent);
+			}
 		}
 		return super.render(graphics);
 	}

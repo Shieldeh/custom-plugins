@@ -31,7 +31,6 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
-import net.runelite.client.config.ConfigTitleSection;
 
 @ConfigGroup("leaguesZMI")
 public interface leaguesZMIConfig extends Config
@@ -212,6 +211,17 @@ public interface leaguesZMIConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "banks",
+		name = "Bank Method",
+		description = "Select the banking method to use",
+		position = 27
+	)
+	default Banks banks()
+	{
+		return Banks.VER_SINHAZA;
+	}
+
+	@ConfigItem(
 		keyName = "logout",
 		name = "Logout when out of essence",
 		description = "Enable to logout when out of daeyalt and pure essence.",
@@ -234,10 +244,21 @@ public interface leaguesZMIConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "hideDelays",
+		name = "Hide delay UI",
+		description = "Enable to turn off delay UI",
+		position = 30
+	)
+	default boolean hideDelays()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 		keyName = "startButton",
 		name = "Start/Stop",
 		description = "Start or stop the bot",
-		position = 30
+		position = 100
 	)
 	default Button startButton()
 	{
