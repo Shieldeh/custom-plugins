@@ -1,5 +1,3 @@
-import ProjectVersions.rlVersion
-
 /*
  * Copyright (c) 2019 Owain van Brakel <https://github.com/Owain94>
  * All rights reserved.
@@ -25,10 +23,15 @@ import ProjectVersions.rlVersion
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.4.0"
+version = "1.0.0"
 
-project.extra["PluginName"] = "BotUtils" // This is the name that is used in the external plugin manager panel
-project.extra["PluginDescription"] = "Illumine - Utils required for plugins to function with added automation" // This is the description that is used in the external plugin manager panel
+project.extra["PluginName"] = "leaguesZMI"
+project.extra["PluginDescription"] = "crafts runes at ZMI in leagues."
+
+dependencies {
+    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "1.0.0+")
+    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.13+")
+}
 
 tasks {
     jar {
@@ -37,6 +40,11 @@ tasks {
                     "Plugin-Version" to project.version,
                     "Plugin-Id" to nameToId(project.extra["PluginName"] as String),
                     "Plugin-Provider" to project.extra["PluginProvider"],
+                    "Plugin-Dependencies" to
+                            arrayOf(
+                                    nameToId("iUtils"),
+                                    "chinbreakhandler-plugin"
+                            ).joinToString(),
                     "Plugin-Description" to project.extra["PluginDescription"],
                     "Plugin-License" to project.extra["PluginLicense"]
             ))

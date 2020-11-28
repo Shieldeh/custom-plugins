@@ -1,0 +1,20 @@
+package net.runelite.client.plugins.leaguesZMI;
+
+public enum leaguesZMIState
+{
+
+	HANDLE_BREAK,
+	TIMEOUT,
+	ITERATING,
+	IDLING,
+	DEPOSIT_ALL,
+	WITHDRAW_ESSENCE,
+	OPEN_BANK,
+	OUT_OF_ESSENCE,
+	MOVING,
+	CRAFT,
+	TELEPORT_ORB,
+	TELEPORT_TALISMAN,
+	CLOSE_BANK;
+
+}

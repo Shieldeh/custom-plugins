@@ -1,8 +1,7 @@
-rootProject.name = "public"
+rootProject.name = "shieldehsplugins"
 
-include(":botutils")
-include(":aaDevelopment")
-include(":Seaweeder")
+//include(":fruitthiever")
+include(":leaguesZMI")
 
 
 for (project in rootProject.children) {
