@@ -27,6 +27,7 @@ version = "1.0.0"
 
 project.extra["PluginName"] = "leaguesZMI"
 project.extra["PluginDescription"] = "crafts runes at ZMI in leagues."
+project.extra["ProjectUrl"] = ""
 
 dependencies {
     compileOnly(group = "com.openosrs.externals", name = "iutils", version = "1.0.0+")
