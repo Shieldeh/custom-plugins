@@ -23,10 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.0"
+version = "1.0.1"
 
-project.extra["PluginName"] = "leaguesZMI"
-project.extra["PluginDescription"] = "crafts runes at ZMI in leagues."
+project.extra["PluginName"] = "Leagues - ZMI"
+project.extra["PluginDescription"] = "Leagues ZMI rcer, banks at Ver Sinhaza."
 project.extra["ProjectUrl"] = ""
 
 dependencies {
