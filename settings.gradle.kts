@@ -1,6 +1,6 @@
 rootProject.name = "shieldehsplugins"
 
-//include(":fruitthiever")
+include(":leaguesChopper")
 include(":leaguesZMI")
 
 
