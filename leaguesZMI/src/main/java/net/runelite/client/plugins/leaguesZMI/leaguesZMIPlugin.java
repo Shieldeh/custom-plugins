@@ -332,7 +332,7 @@ public class leaguesZMIPlugin extends Plugin
 		}
 		else
 		{
-			bank.withdrawAllItem(ItemID.DAEYALT_ESSENCE);
+			bank.withdrawAllItem(ItemID.PURE_ESSENCE);
 		}
 
 		timeout = 0 + tickDelay();

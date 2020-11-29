@@ -39,8 +39,8 @@ open class BootstrapTask : DefaultTask() {
     @TaskAction
     fun boostrap() {
         if (project == project.rootProject) {
-            val bootstrapDir = File("${project.rootDir}")
-            val bootstrapReleaseDir = File("${project.rootDir}/release")
+            val bootstrapDir = File("${project.rootDir}/bootstrap")
+            val bootstrapReleaseDir = File("${project.rootDir}/bootstrap/release")
 
             bootstrapDir.mkdirs()
             bootstrapReleaseDir.mkdirs()
