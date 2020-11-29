@@ -23,10 +23,10 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.1.0"
+version = "1.2.0"
 
 project.extra["PluginName"] = "Leagues - ZMI"
-project.extra["PluginDescription"] = "Leagues ZMI runecrafter, banks at Ver Sinhaza or Crafting Guild."
+project.extra["PluginDescription"] = "Leagues ZMI runecrafter, banks at Ver Sinhaza, Seers Village with Kandarin Hard, or Crafting Guild."
 project.extra["ProjectUrl"] = ""
 
 dependencies {

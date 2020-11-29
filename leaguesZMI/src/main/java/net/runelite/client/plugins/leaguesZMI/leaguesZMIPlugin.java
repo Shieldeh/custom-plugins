@@ -33,13 +33,16 @@ import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
+import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
+import net.runelite.api.ObjectID;
 import net.runelite.api.Player;
 import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
+import net.runelite.api.widgets.WidgetInfo;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
@@ -68,7 +71,7 @@ import org.slf4j.LoggerFactory;
 @PluginDescriptor(
 	name = "Leagues - ZMI",
 	enabledByDefault = false,
-	description = "Leagues ZMI runecrafter, banks at Ver Sinhaza or Crafting Guild.",
+	description = "Leagues ZMI runecrafter, banks at Ver Sinhaza, Seers Village with Kandarin Hard, or Crafting Guild.",
 	tags = {"zmi", "skill", "boat"},
 	type = PluginType.SKILLING
 )
@@ -114,8 +117,14 @@ public class leaguesZMIPlugin extends Plugin
 	int timeout = 0;
 	long sleepLength = 0L;
 	boolean startZMI;
-	public static Set<Integer> RUNES = Set.of(556, 555, 557, 554, 558, 562, 560, 565, 559, 564, 563, 561);
-	public static final int ZMI = 12119;
+	public static Set<Integer> RUNES = Set.of(
+		ItemID.AIR_RUNE, ItemID.WATER_RUNE, ItemID.EARTH_RUNE, ItemID.FIRE_RUNE,
+		ItemID.MIND_RUNE, ItemID.CHAOS_RUNE, ItemID.DEATH_RUNE, ItemID.BLOOD_RUNE,
+		ItemID.BODY_RUNE, ItemID.COSMIC_RUNE, ItemID.LAW_RUNE, ItemID.NATURE_RUNE);
+	public static Set<Integer> STAVES = Set.of(
+		ItemID.MYSTIC_AIR_STAFF, ItemID.STAFF_OF_AIR, ItemID.AIR_BATTLESTAFF,
+		ItemID.SMOKE_BATTLESTAFF, ItemID.MYSTIC_SMOKE_STAFF, ItemID.MIST_BATTLESTAFF,
+		ItemID.MYSTIC_MIST_STAFF, ItemID.DUST_BATTLESTAFF, ItemID.MYSTIC_DUST_STAFF);
 
 	public leaguesZMIPlugin()
 	{
@@ -123,23 +132,23 @@ public class leaguesZMIPlugin extends Plugin
 
 	protected void startUp()
 	{
-		this.chinBreakHandler.registerPlugin(this);
+		chinBreakHandler.registerPlugin(this);
 	}
 
 	protected void shutDown()
 	{
-		this.resetVals();
-		this.chinBreakHandler.unregisterPlugin(this);
+		resetVals();
+		chinBreakHandler.unregisterPlugin(this);
 	}
 
 	public void resetVals()
 	{
-		this.overlayManager.remove(this.overlay);
-		this.chinBreakHandler.stopPlugin(this);
-		this.startZMI = false;
-		this.botTimer = null;
-		this.timeout = 0;
-		this.targetMenu = null;
+		overlayManager.remove(overlay);
+		chinBreakHandler.stopPlugin(this);
+		startZMI = false;
+		botTimer = null;
+		timeout = 0;
+		targetMenu = null;
 	}
 
 	@Provides
@@ -166,20 +175,20 @@ public class leaguesZMIPlugin extends Plugin
 					switch (var3)
 					{
 						case 0:
-							if (!this.startZMI)
+							if (!startZMI)
 							{
-								this.startZMI = true;
-								this.chinBreakHandler.startPlugin(this);
-								this.botTimer = Instant.now();
-								this.state = null;
-								this.targetMenu = null;
-								this.timeout = 0;
-								this.overlayManager.add(this.overlay);
-								this.initVals();
+								startZMI = true;
+								chinBreakHandler.startPlugin(this);
+								botTimer = Instant.now();
+								state = null;
+								targetMenu = null;
+								timeout = 0;
+								overlayManager.add(overlay);
+								initVals();
 							}
 							else
 							{
-								this.resetVals();
+								resetVals();
 							}
 						default:
 					}
@@ -201,53 +210,64 @@ public class leaguesZMIPlugin extends Plugin
 
 	private long sleepDelay()
 	{
-		this.sleepLength = this.calc.randomDelay(this.config.sleepWeightedDistribution(), this.config.sleepMin(), this.config.sleepMax(), this.config.sleepDeviation(), this.config.sleepTarget());
-		return this.sleepLength;
+		sleepLength = calc.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+		return sleepLength;
 	}
 
 	private int tickDelay()
 	{
-		int tickLength = (int) this.calc
-			.randomDelay(this.config.tickDelayWeightedDistribution(), this.config.tickDelayMin(), this.config.tickDelayMax(), this.config.tickDelayDeviation(), this.config.tickDelayTarget());
+		int tickLength = (int) calc.randomDelay(config.tickDelayWeightedDistribution(), config.tickDelayMin(), config.tickDelayMax(), config.tickDelayDeviation(), config.tickDelayTarget());
+		log.debug("tick delay for {} ticks", tickLength);
 		return tickLength;
 	}
 
 	private void teleportCrystal()
 	{
-		this.targetMenu = new MenuEntry("", "", 25104, 33, this.inventory.getWidgetItem(25104).getIndex(), 9764864, false);
-		this.menu.setEntry(this.targetMenu);
-		this.mouse.delayMouseClick(this.inventory.getWidgetItem(25104).getCanvasBounds(), this.sleepDelay());
+		targetMenu = new MenuEntry("", "", 25104, 33, inventory.getWidgetItem(25104).getIndex(), 9764864, false);
+		menu.setEntry(targetMenu);
+		mouse.delayMouseClick(inventory.getWidgetItem(25104).getCanvasBounds(), sleepDelay());
 	}
 
 	private void teleportBank()
 	{
-		if (this.config.banks().equals(Banks.CRAFTING_GUILD))
+		switch (config.banks())
 		{
-			this.targetMenu = new MenuEntry("", "", 3, MenuOpcode.CC_OP.getId(), -1, 25362447, false);
+			case VER_SINHAZA:
+				targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), -1, 25362448, false);
+				break;
+			case CRAFTING_GUILD:
+				targetMenu = new MenuEntry("", "", 3, MenuOpcode.CC_OP.getId(), -1, 25362447, false);
+				break;
+			case SEERS:
+				if (playerUtils.isItemEquipped(STAVES))
+				{
+					targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), -1, WidgetInfo.SPELL_CAMELOT_TELEPORT.getId(), false);
+				}
+				else
+				{
+					utils.sendGameMessage("You must equip an infinite source of air runes.");
+					startZMI = false;
+				}
+				break;
 		}
 
-		if (this.config.banks().equals(Banks.VER_SINHAZA))
-		{
-			this.targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), -1, 25362448, false);
-		}
-
-		this.menu.setEntry(this.targetMenu);
-		this.mouse.delayClickRandomPointCenter(100, 100, this.sleepDelay());
+		menu.setEntry(targetMenu);
+		mouse.delayClickRandomPointCenter(100, 100, sleepDelay());
 	}
 
 	private void craft()
 	{
-		GameObject zmi = this.object.findNearestGameObject(29631);
+		GameObject zmi = object.findNearestGameObject(ObjectID.RUNECRAFTING_ALTAR);
 		if (zmi != null)
 		{
-			this.targetMenu = new MenuEntry("", "", zmi.getId(), 3, zmi.getLocalLocation().getSceneX() - 1, zmi.getLocalLocation().getSceneY() - 1, false);
-			this.menu.setEntry(this.targetMenu);
-			this.mouse.delayMouseClick(zmi.getConvexHull().getBounds(), this.sleepDelay());
+			targetMenu = new MenuEntry("", "", zmi.getId(), 3, zmi.getLocalLocation().getSceneX() - 1, zmi.getLocalLocation().getSceneY() - 1, false);
+			menu.setEntry(targetMenu);
+			mouse.delayMouseClick(zmi.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
 		{
-			this.utils.sendGameMessage("ZMI altar not found.");
-			this.startZMI = false;
+			utils.sendGameMessage("ZMI altar not found.");
+			startZMI = false;
 		}
 
 	}
@@ -255,104 +275,131 @@ public class leaguesZMIPlugin extends Plugin
 	private void openBank()
 	{
 		GameObject bankTarget;
-		if (this.config.banks().equals(Banks.CRAFTING_GUILD))
-		{
-			bankTarget = this.object.findNearestGameObject(14886);
-			if (bankTarget != null)
-			{
-				this.targetMenu =
-					new MenuEntry("", "", bankTarget.getId(), this.bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(), bankTarget.getSceneMinLocation().getY(), false);
-				this.menu.setEntry(this.targetMenu);
-				this.mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), this.sleepDelay());
-			}
-		}
+		switch (config.banks())
 
-		if (this.config.banks().equals(Banks.VER_SINHAZA))
 		{
-			bankTarget = this.object.findNearestGameObjectWithin(new WorldPoint(3652, 3207, 0), 0, 32666);
-			if (bankTarget != null)
-			{
-				this.targetMenu =
-					new MenuEntry("", "", bankTarget.getId(), this.bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(), bankTarget.getSceneMinLocation().getY(), false);
-				this.menu.setEntry(this.targetMenu);
-				this.mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), this.sleepDelay());
-			}
-		}
+			case VER_SINHAZA:
+				bankTarget = object.findNearestGameObjectWithin(new WorldPoint(3652, 3207, 0), 0, Banks.VER_SINHAZA.getBankObjID());
 
+				if (bankTarget != null)
+				{
+					targetMenu =
+						new MenuEntry("", "", bankTarget.getId(), bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(), bankTarget.getSceneMinLocation().getY(),
+							false);
+					menu.setEntry(targetMenu);
+					mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), sleepDelay());
+				}
+
+				break;
+
+
+			case CRAFTING_GUILD:
+				bankTarget = object.findNearestGameObject(Banks.CRAFTING_GUILD.getBankObjID());
+
+				if (bankTarget != null)
+				{
+					targetMenu =
+						new MenuEntry("", "", bankTarget.getId(), bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(), bankTarget.getSceneMinLocation().getY(),
+							false);
+					menu.setEntry(targetMenu);
+					mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), sleepDelay());
+				}
+
+				break;
+
+
+			case SEERS:
+				bankTarget = object.findNearestGameObject(Banks.SEERS.getBankObjID());
+
+				if (bankTarget != null)
+				{
+					targetMenu =
+						new MenuEntry("", "", bankTarget.getId(), bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(), bankTarget.getSceneMinLocation().getY(),
+							false);
+					menu.setEntry(targetMenu);
+					mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), sleepDelay());
+				}
+
+				break;
+		}
 	}
 
 	private void withdrawEss()
 	{
-		if (this.bank.contains(24704, 27))
+		if (bank.contains(24704, 27))
 		{
-			this.bank.withdrawAllItem(24704);
+			bank.withdrawAllItem(24704);
 		}
 		else
 		{
-			this.bank.withdrawAllItem(7936);
+			bank.withdrawAllItem(7936);
 		}
 
-		this.timeout = 0 + this.tickDelay();
+		timeout = 0 + tickDelay();
 	}
 
 	public leaguesZMIState getState()
 	{
-		if (this.timeout > 0)
+		if (timeout > 0)
 		{
-			this.playerUtils.handleRun(20, 30);
+			playerUtils.handleRun(20, 30);
 			return leaguesZMIState.TIMEOUT;
 		}
-		else if (this.player.getPoseAnimation() != 819 && this.player.getPoseAnimation() != 824 && this.player.getPoseAnimation() != 1205 && this.player.getPoseAnimation() != 1210)
+		else if (player.getPoseAnimation() != 819 && player.getPoseAnimation() != 824 && player.getPoseAnimation() != 1205 && player.getPoseAnimation() != 1210)
 		{
-			if (!this.bank.isOpen())
+			if (!bank.isOpen())
 			{
-				if (!this.inventory.isFull() && this.client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CRAFTING_GUILD.getRegionID() ||
-					!this.inventory.isFull() && this.client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.VER_SINHAZA.getRegionID())
+				if (!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CRAFTING_GUILD.getRegionID() ||
+					!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.VER_SINHAZA.getRegionID() ||
+					!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.SEERS.getRegionID()
+				)
 				{
 					return leaguesZMIState.OPEN_BANK;
 				}
 
-				if (this.inventory.isFull() && this.client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CRAFTING_GUILD.getRegionID() ||
-					this.inventory.isFull() && this.client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.VER_SINHAZA.getRegionID())
+				if (inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CRAFTING_GUILD.getRegionID() ||
+					inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.VER_SINHAZA.getRegionID() ||
+					inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.SEERS.getRegionID()
+				)
 				{
 					return leaguesZMIState.TELEPORT_CRYSTAL;
 				}
 
-				if (!this.inventory.isFull() && this.client.getLocalPlayer().getWorldLocation().getRegionID() == 12119)
+				if (!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == 12119)
 				{
 					return leaguesZMIState.TELEPORT_BANK;
 				}
 
-				if (this.inventory.isFull() && this.client.getLocalPlayer().getWorldLocation().getRegionID() == 12119)
+				if (inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == 12119)
 				{
 					return leaguesZMIState.CRAFT;
 				}
 			}
 
-			if (this.bank.isOpen())
+			if (bank.isOpen())
 			{
-				if (!this.bank.contains(7936, 27))
+				if (!bank.contains(7936, 27))
 				{
-					this.utils.sendGameMessage("get more pure essence");
+					utils.sendGameMessage("get more pure essence");
 					return leaguesZMIState.OUT_OF_ESSENCE;
 				}
 
-				if (this.inventory.containsItem(RUNES))
+				if (inventory.containsItem(RUNES))
 				{
 					return leaguesZMIState.DEPOSIT_ALL;
 				}
 
-				if (!this.inventory.isFull() && !this.inventory.containsItem(RUNES))
+				if (!inventory.isFull() && !inventory.containsItem(RUNES))
 				{
 					return leaguesZMIState.WITHDRAW_ESSENCE;
 				}
 
-				if (this.inventory.isFull())
+				if (inventory.isFull())
 				{
 					return leaguesZMIState.CLOSE_BANK;
 				}
 
-				if (this.chinBreakHandler.shouldBreak(this))
+				if (chinBreakHandler.shouldBreak(this))
 				{
 					return leaguesZMIState.HANDLE_BREAK;
 				}
@@ -369,72 +416,72 @@ public class leaguesZMIPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
-		if (this.startZMI && !this.chinBreakHandler.isBreakActive(this))
+		if (startZMI && !chinBreakHandler.isBreakActive(this))
 		{
-			this.player = this.client.getLocalPlayer();
-			if (this.client != null && this.player != null && this.client.getGameState() == GameState.LOGGED_IN)
+			player = client.getLocalPlayer();
+			if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
 			{
-				if (!this.client.isResized())
+				if (!client.isResized())
 				{
-					this.utils.sendGameMessage("client must be set to resizable");
-					this.startZMI = false;
+					utils.sendGameMessage("client must be set to resizable");
+					startZMI = false;
 					return;
 				}
 
-				this.playerUtils.handleRun(40, 20);
-				this.state = this.getState();
-				switch (this.state)
+				playerUtils.handleRun(40, 20);
+				state = getState();
+				switch (state)
 				{
 					case TIMEOUT:
-						--this.timeout;
+						--timeout;
 					case ITERATING:
 					default:
 						break;
 					case IDLING:
-						this.timeout = 1;
+						timeout = 1;
 						break;
 					case MOVING:
-						this.timeout = 1;
+						timeout = 1;
 						break;
 					case OPEN_BANK:
-						this.openBank();
-						this.timeout = this.tickDelay();
+						openBank();
+						timeout = tickDelay();
 						break;
 					case CLOSE_BANK:
-						this.bank.close();
-						this.timeout = this.tickDelay();
+						bank.close();
+						timeout = tickDelay();
 						break;
 					case CRAFT:
-						this.craft();
-						this.timeout = this.tickDelay();
+						craft();
+						timeout = tickDelay();
 						break;
 					case TELEPORT_CRYSTAL:
-						this.teleportCrystal();
-						this.timeout = 3 + this.tickDelay();
+						teleportCrystal();
+						timeout = 3 + tickDelay();
 						break;
 					case TELEPORT_BANK:
-						this.teleportBank();
-						this.timeout = 3 + this.tickDelay();
+						teleportBank();
+						timeout = 3 + tickDelay();
 						break;
 					case DEPOSIT_ALL:
-						this.bank.depositAll();
-						this.timeout = this.tickDelay();
+						bank.depositAll();
+						timeout = tickDelay();
 						break;
 					case WITHDRAW_ESSENCE:
-						this.withdrawEss();
+						withdrawEss();
 						break;
 					case OUT_OF_ESSENCE:
-						if (this.config.logout())
+						if (config.logout())
 						{
-							this.interfaceUtils.logout();
+							interfaceUtils.logout();
 						}
 
-						this.startZMI = false;
-						this.resetVals();
+						startZMI = false;
+						resetVals();
 						break;
 					case HANDLE_BREAK:
-						this.chinBreakHandler.startBreak(this);
-						this.timeout = 8;
+						chinBreakHandler.startBreak(this);
+						timeout = 8;
 				}
 			}
 
@@ -444,12 +491,12 @@ public class leaguesZMIPlugin extends Plugin
 	@Subscribe
 	private void onGameStateChanged(GameStateChanged event)
 	{
-		if (this.startZMI)
+		if (startZMI)
 		{
 			if (event.getGameState() == GameState.LOGGED_IN)
 			{
-				this.state = leaguesZMIState.IDLING;
-				this.timeout = 2;
+				state = leaguesZMIState.IDLING;
+				timeout = 2;
 			}
 
 		}
