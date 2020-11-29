@@ -28,6 +28,7 @@ package net.runelite.client.plugins.leaguesChopper;
 import com.google.inject.Provides;
 import com.owain.chinbreakhandler.ChinBreakHandler;
 import java.time.Instant;
+import java.util.Set;
 import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
@@ -35,7 +36,6 @@ import net.runelite.api.GameState;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.Player;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
@@ -111,6 +111,7 @@ public class leaguesChopperPlugin extends Plugin
 	int timeout = 0;
 	long sleepLength = 0L;
 	boolean startChopper;
+	public static Set<Integer> teleportItems = Set.of(25104);
 	// 11312 = hardwood grove
 	public static final int skillingRegionID = 11312;
 
@@ -120,23 +121,23 @@ public class leaguesChopperPlugin extends Plugin
 
 	protected void startUp()
 	{
-		this.chinBreakHandler.registerPlugin(this);
+		chinBreakHandler.registerPlugin(this);
 	}
 
 	protected void shutDown()
 	{
-		this.resetVals();
-		this.chinBreakHandler.unregisterPlugin(this);
+		resetVals();
+		chinBreakHandler.unregisterPlugin(this);
 	}
 
 	public void resetVals()
 	{
-		this.overlayManager.remove(this.overlay);
-		this.chinBreakHandler.stopPlugin(this);
-		this.startChopper = false;
-		this.botTimer = null;
-		this.timeout = 0;
-		this.targetMenu = null;
+		overlayManager.remove(overlay);
+		chinBreakHandler.stopPlugin(this);
+		startChopper = false;
+		botTimer = null;
+		timeout = 0;
+		targetMenu = null;
 	}
 
 	@Provides
@@ -163,20 +164,20 @@ public class leaguesChopperPlugin extends Plugin
 					switch (var3)
 					{
 						case 0:
-							if (!this.startChopper)
+							if (!startChopper)
 							{
-								this.startChopper = true;
-								this.chinBreakHandler.startPlugin(this);
-								this.botTimer = Instant.now();
-								this.state = null;
-								this.targetMenu = null;
-								this.timeout = 0;
-								this.overlayManager.add(this.overlay);
-								this.initVals();
+								startChopper = true;
+								chinBreakHandler.startPlugin(this);
+								botTimer = Instant.now();
+								state = null;
+								targetMenu = null;
+								timeout = 0;
+								overlayManager.add(overlay);
+								initVals();
 							}
 							else
 							{
-								this.resetVals();
+								resetVals();
 							}
 						default:
 					}
@@ -198,134 +199,138 @@ public class leaguesChopperPlugin extends Plugin
 
 	private long sleepDelay()
 	{
-		this.sleepLength = this.calc.randomDelay(this.config.sleepWeightedDistribution(), this.config.sleepMin(), this.config.sleepMax(), this.config.sleepDeviation(), this.config.sleepTarget());
-		return this.sleepLength;
+		sleepLength = calc.randomDelay(config.sleepWeightedDistribution(), config.sleepMin(), config.sleepMax(), config.sleepDeviation(), config.sleepTarget());
+		return sleepLength;
 	}
 
 	private int tickDelay()
 	{
-		int tickLength = (int) this.calc
-			.randomDelay(this.config.tickDelayWeightedDistribution(), this.config.tickDelayMin(), this.config.tickDelayMax(), this.config.tickDelayDeviation(), this.config.tickDelayTarget());
+		int tickLength = (int) calc
+			.randomDelay(config.tickDelayWeightedDistribution(), config.tickDelayMin(), config.tickDelayMax(), config.tickDelayDeviation(), config.tickDelayTarget());
 		return tickLength;
 	}
 
 	private void teleportCrystal()
 	{
-		this.targetMenu = new MenuEntry("", "", 25104, 33, this.inventory.getWidgetItem(25104).getIndex(), 9764864, false);
-		this.menu.setEntry(this.targetMenu);
-		this.mouse.delayMouseClick(this.inventory.getWidgetItem(25104).getCanvasBounds(), this.sleepDelay());
+		targetMenu = new MenuEntry("", "", 25104, 33, inventory.getWidgetItem(25104).getIndex(), 9764864, false);
+		menu.setEntry(targetMenu);
+		mouse.delayMouseClick(inventory.getWidgetItem(25104).getCanvasBounds(), sleepDelay());
 	}
 
 	private void teleportBank()
 	{
-		if (this.config.banks().equals(Banks.CRAFTING_GUILD))
+		switch (config.banks())
 		{
-			this.targetMenu = new MenuEntry("", "", 3, MenuOpcode.CC_OP.getId(), -1, 25362447, false);
+			case VER_SINHAZA:
+				targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), -1, 25362448, false);
+				break;
+			case CRAFTING_GUILD:
+				targetMenu = new MenuEntry("", "", 3, MenuOpcode.CC_OP.getId(), -1, 25362447, false);
+				break;
 		}
 
-		if (this.config.banks().equals(Banks.VER_SINHAZA))
-		{
-			this.targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), -1, 25362448, false);
-		}
-
-		this.menu.setEntry(this.targetMenu);
-		this.mouse.delayClickRandomPointCenter(100, 100, this.sleepDelay());
+		menu.setEntry(targetMenu);
+		mouse.delayClickRandomPointCenter(100, 100, sleepDelay());
 	}
 
 	private void chop()
 	{
-		GameObject tree = this.object.findNearestGameObject(config.trees().gettreeObjID());
+		GameObject tree = object.findNearestGameObject(config.trees().gettreeObjID());
 
 		if (tree != null)
 		{
-			this.targetMenu = new MenuEntry("Chop Down", "", tree.getId(), 3, tree.getSceneMinLocation().getX(), tree.getSceneMinLocation().getY(), false);
-			this.menu.setEntry(this.targetMenu);
-			this.mouse.delayMouseClick(tree.getConvexHull().getBounds(), this.sleepDelay());
+			targetMenu = new MenuEntry("", "", tree.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), tree.getSceneMinLocation().getX(), tree.getSceneMinLocation().getY(), false);
+			menu.setEntry(targetMenu);
+			mouse.delayMouseClick(tree.getConvexHull().getBounds(), sleepDelay());
 		}
 		else
 		{
-			this.utils.sendGameMessage("Tree not found." + config.trees().getName());
-			this.startChopper = false;
+			utils.sendGameMessage("Tree not found." + config.trees().getName());
+			startChopper = false;
 		}
 	}
 
 	private void openBank()
 	{
 		GameObject bankTarget;
-		if (this.config.banks().equals(Banks.CRAFTING_GUILD))
-		{
-			bankTarget = this.object.findNearestGameObject(14886);
-			if (bankTarget != null)
-			{
-				this.targetMenu =
-					new MenuEntry("", "", bankTarget.getId(), this.bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(), bankTarget.getSceneMinLocation().getY(), false);
-				this.menu.setEntry(this.targetMenu);
-				this.mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), this.sleepDelay());
-			}
-		}
+		switch (config.banks())
 
-		if (this.config.banks().equals(Banks.VER_SINHAZA))
 		{
-			bankTarget = this.object.findNearestGameObjectWithin(new WorldPoint(3652, 3207, 0), 0, 32666);
-			if (bankTarget != null)
-			{
-				this.targetMenu =
-					new MenuEntry("", "", bankTarget.getId(), this.bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(), bankTarget.getSceneMinLocation().getY(), false);
-				this.menu.setEntry(this.targetMenu);
-				this.mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), this.sleepDelay());
-			}
-		}
+			case VER_SINHAZA:
+				bankTarget = object.findNearestGameObjectWithin(Banks.VER_SINHAZA.getBankLoc(), 0, Banks.VER_SINHAZA.getBankObjID());
+				if (bankTarget != null)
+				{
+					targetMenu =
+						new MenuEntry("", "", bankTarget.getId(), bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(), bankTarget.getSceneMinLocation().getY(),
+							false);
+					menu.setEntry(targetMenu);
+					mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), sleepDelay());
+				}
+				break;
 
+
+			case CRAFTING_GUILD:
+				bankTarget = object.findNearestGameObject(Banks.CRAFTING_GUILD.getBankObjID());
+				if (bankTarget != null)
+				{
+					targetMenu =
+						new MenuEntry("", "", bankTarget.getId(), bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(), bankTarget.getSceneMinLocation().getY(),
+							false);
+					menu.setEntry(targetMenu);
+					mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), sleepDelay());
+				}
+				break;
+		}
 	}
 
 	public leaguesChopperState getState()
 	{
-		if (this.timeout > 0)
+		if (timeout > 0)
 		{
-			this.playerUtils.handleRun(20, 30);
+			playerUtils.handleRun(20, 30);
 			return leaguesChopperState.TIMEOUT;
 		}
-		else if (this.player.getPoseAnimation() != 819 && this.player.getPoseAnimation() != 824 && this.player.getPoseAnimation() != 1205 && this.player.getPoseAnimation() != 1210)
+		else if (player.getPoseAnimation() != 819 && player.getPoseAnimation() != 824 && player.getPoseAnimation() != 1205 && player.getPoseAnimation() != 1210)
 		{
-			if (!this.bank.isOpen())
+			if (!bank.isOpen())
 			{
-				if (this.inventory.isFull() && this.client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CRAFTING_GUILD.getRegionID() ||
-					this.inventory.isFull() && this.client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.VER_SINHAZA.getRegionID())
+				if (inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CRAFTING_GUILD.getRegionID() ||
+					inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.VER_SINHAZA.getRegionID())
 				{
 					return leaguesChopperState.OPEN_BANK;
 				}
 
-				if (!this.inventory.isFull() && this.client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CRAFTING_GUILD.getRegionID() ||
-					!this.inventory.isFull() && this.client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.VER_SINHAZA.getRegionID())
+				if (!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CRAFTING_GUILD.getRegionID() ||
+					!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.VER_SINHAZA.getRegionID())
 				{
 					return leaguesChopperState.TELEPORT_CRYSTAL;
 				}
 
-				if (!this.inventory.isFull() && this.client.getLocalPlayer().getWorldLocation().getRegionID() == skillingRegionID && client.getLocalPlayer().getAnimation() == -1)
+				if (!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == skillingRegionID && client.getLocalPlayer().getAnimation() == -1)
 				{
 					return leaguesChopperState.CHOP;
 				}
 
-				if (this.inventory.isFull() && this.client.getLocalPlayer().getWorldLocation().getRegionID() == skillingRegionID)
+				if (inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == skillingRegionID)
 				{
 					return leaguesChopperState.TELEPORT_BANK;
 				}
 				return leaguesChopperState.ANIMATING;
 			}
 
-			if (this.bank.isOpen())
+			if (bank.isOpen())
 			{
-				if (this.inventory.isFull())
+				if (inventory.isFull())
 				{
 					return leaguesChopperState.DEPOSIT_ALL;
 				}
 
-				if (!this.inventory.isFull())
+				if (!inventory.isFull())
 				{
 					return leaguesChopperState.CLOSE_BANK;
 				}
 
-				if (this.chinBreakHandler.shouldBreak(this))
+				if (chinBreakHandler.shouldBreak(this))
 				{
 					return leaguesChopperState.HANDLE_BREAK;
 				}
@@ -342,60 +347,60 @@ public class leaguesChopperPlugin extends Plugin
 	@Subscribe
 	private void onGameTick(GameTick tick)
 	{
-		if (this.startChopper && !this.chinBreakHandler.isBreakActive(this))
+		if (startChopper && !chinBreakHandler.isBreakActive(this))
 		{
-			this.player = this.client.getLocalPlayer();
-			if (this.client != null && this.player != null && this.client.getGameState() == GameState.LOGGED_IN)
+			player = client.getLocalPlayer();
+			if (client != null && player != null && client.getGameState() == GameState.LOGGED_IN)
 			{
-				if (!this.client.isResized())
+				if (!client.isResized())
 				{
-					this.utils.sendGameMessage("client must be set to resizable");
-					this.startChopper = false;
+					utils.sendGameMessage("client must be set to resizable");
+					startChopper = false;
 					return;
 				}
 
-				this.playerUtils.handleRun(40, 20);
-				this.state = this.getState();
-				switch (this.state)
+				playerUtils.handleRun(40, 20);
+				state = getState();
+				switch (state)
 				{
 					case TIMEOUT:
-						--this.timeout;
+						--timeout;
 					case ITERATING:
 					default:
 						break;
 					case IDLING:
-						this.timeout = 1;
+						timeout = 1;
 						break;
 					case MOVING:
-						this.timeout = 1;
+						timeout = 1;
 						break;
 					case OPEN_BANK:
-						this.openBank();
-						this.timeout = this.tickDelay();
+						openBank();
+						timeout = tickDelay();
 						break;
 					case CLOSE_BANK:
-						this.bank.close();
-						this.timeout = this.tickDelay();
+						bank.close();
+						timeout = tickDelay();
 						break;
 					case CHOP:
-						this.chop();
-						this.timeout = 1 + this.tickDelay();
+						chop();
+						timeout = 1 + tickDelay();
 						break;
 					case TELEPORT_CRYSTAL:
-						this.teleportCrystal();
-						this.timeout = 3 + this.tickDelay();
+						teleportCrystal();
+						timeout = 3 + tickDelay();
 						break;
 					case TELEPORT_BANK:
-						this.teleportBank();
-						this.timeout = 3 + this.tickDelay();
+						teleportBank();
+						timeout = 3 + tickDelay();
 						break;
 					case DEPOSIT_ALL:
-						this.bank.depositAll();
-						this.timeout = this.tickDelay();
+						bank.depositAllExcept(teleportItems);
+						timeout = tickDelay();
 						break;
 					case HANDLE_BREAK:
-						this.chinBreakHandler.startBreak(this);
-						this.timeout = 8;
+						chinBreakHandler.startBreak(this);
+						timeout = 8;
 				}
 			}
 
@@ -405,12 +410,12 @@ public class leaguesChopperPlugin extends Plugin
 	@Subscribe
 	private void onGameStateChanged(GameStateChanged event)
 	{
-		if (this.startChopper)
+		if (startChopper)
 		{
 			if (event.getGameState() == GameState.LOGGED_IN)
 			{
-				this.state = leaguesChopperState.IDLING;
-				this.timeout = 2;
+				state = leaguesChopperState.IDLING;
+				timeout = 2;
 			}
 
 		}

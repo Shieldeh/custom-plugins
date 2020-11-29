@@ -38,7 +38,6 @@ import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.ObjectID;
 import net.runelite.api.Player;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.events.ConfigButtonClicked;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
@@ -125,6 +124,7 @@ public class leaguesZMIPlugin extends Plugin
 		ItemID.MYSTIC_AIR_STAFF, ItemID.STAFF_OF_AIR, ItemID.AIR_BATTLESTAFF,
 		ItemID.SMOKE_BATTLESTAFF, ItemID.MYSTIC_SMOKE_STAFF, ItemID.MIST_BATTLESTAFF,
 		ItemID.MYSTIC_MIST_STAFF, ItemID.DUST_BATTLESTAFF, ItemID.MYSTIC_DUST_STAFF);
+	public static final int skillingRegionID = 12119;
 
 	public leaguesZMIPlugin()
 	{
@@ -279,7 +279,7 @@ public class leaguesZMIPlugin extends Plugin
 
 		{
 			case VER_SINHAZA:
-				bankTarget = object.findNearestGameObjectWithin(new WorldPoint(3652, 3207, 0), 0, Banks.VER_SINHAZA.getBankObjID());
+				bankTarget = object.findNearestGameObjectWithin(Banks.VER_SINHAZA.getBankLoc(), 0, Banks.VER_SINHAZA.getBankObjID());
 
 				if (bankTarget != null)
 				{
@@ -326,13 +326,13 @@ public class leaguesZMIPlugin extends Plugin
 
 	private void withdrawEss()
 	{
-		if (bank.contains(24704, 27))
+		if (bank.contains(ItemID.DAEYALT_ESSENCE, 27))
 		{
-			bank.withdrawAllItem(24704);
+			bank.withdrawAllItem(ItemID.DAEYALT_ESSENCE);
 		}
 		else
 		{
-			bank.withdrawAllItem(7936);
+			bank.withdrawAllItem(ItemID.DAEYALT_ESSENCE);
 		}
 
 		timeout = 0 + tickDelay();
@@ -365,12 +365,12 @@ public class leaguesZMIPlugin extends Plugin
 					return leaguesZMIState.TELEPORT_CRYSTAL;
 				}
 
-				if (!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == 12119)
+				if (!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == skillingRegionID)
 				{
 					return leaguesZMIState.TELEPORT_BANK;
 				}
 
-				if (inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == 12119)
+				if (inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == skillingRegionID)
 				{
 					return leaguesZMIState.CRAFT;
 				}
@@ -378,7 +378,7 @@ public class leaguesZMIPlugin extends Plugin
 
 			if (bank.isOpen())
 			{
-				if (!bank.contains(7936, 27))
+				if (!bank.contains(ItemID.PURE_ESSENCE, 27))
 				{
 					utils.sendGameMessage("get more pure essence");
 					return leaguesZMIState.OUT_OF_ESSENCE;

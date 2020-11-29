@@ -23,11 +23,11 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.2.0"
+version = "1.2.1"
 
 project.extra["PluginName"] = "Leagues - ZMI"
 project.extra["PluginDescription"] = "Leagues ZMI runecrafter, banks at Ver Sinhaza, Seers Village with Kandarin Hard, or Crafting Guild."
-project.extra["ProjectUrl"] = ""
+project.extra["ProjectUrl"] = "https://discord.gg/2j7aQQA8RA"
 
 dependencies {
     compileOnly(group = "com.openosrs.externals", name = "iutils", version = "1.0.0+")
