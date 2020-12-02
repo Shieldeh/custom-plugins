@@ -14,6 +14,8 @@ public enum leaguesChopperState
 	CHOP,
 	TELEPORT_CRYSTAL,
 	TELEPORT_BANK,
+	WITHDRAW_RING,
+	EQUIP_RING,
 	CLOSE_BANK
 
 }

@@ -1,11 +1,13 @@
 package net.runelite.client.plugins.leaguesChopper;
 
+import net.runelite.api.ObjectID;
 import net.runelite.api.coords.WorldPoint;
 
 public enum Banks
 {
 	VER_SINHAZA("Ver Sinhaza", 14642, 32666, new WorldPoint(3652, 3207, 0)),
-	CRAFTING_GUILD("Crafting Guild", 11571, 14886);
+	CRAFTING_GUILD("Crafting Guild", 11571, ObjectID.BANK_CHEST_14886),
+	CASTLE_WARS("Castle Wars", 9776, ObjectID.BANK_CHEST_4483);
 
 	private final String name;
 	private final Integer regionID;

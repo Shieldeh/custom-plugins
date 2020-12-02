@@ -30,9 +30,11 @@ import com.owain.chinbreakhandler.ChinBreakHandler;
 import java.time.Instant;
 import java.util.Set;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
+import net.runelite.api.ItemID;
 import net.runelite.api.MenuEntry;
 import net.runelite.api.MenuOpcode;
 import net.runelite.api.Player;
@@ -66,10 +68,11 @@ import org.pf4j.Extension;
 @PluginDescriptor(
 	name = "Leagues - Chopper",
 	enabledByDefault = false,
-	description = "Leagues hardwood cutter, banks at Ver Sinhaza or Crafting Guild.",
+	description = "Leagues hardwood cutter, banks at Ver Sinhaza, Castle Wars, or Crafting Guild.",
 	tags = {"woodcutting", "skill", "boat"},
 	type = PluginType.SKILLING
 )
+@Slf4j
 public class leaguesChopperPlugin extends Plugin
 {
 	@Inject
@@ -111,6 +114,11 @@ public class leaguesChopperPlugin extends Plugin
 	int timeout = 0;
 	long sleepLength = 0L;
 	boolean startChopper;
+	public static Set<Integer> RINGS = Set.of(
+		ItemID.RING_OF_DUELING1, ItemID.RING_OF_DUELING2, ItemID.RING_OF_DUELING3,
+		ItemID.RING_OF_DUELING4, ItemID.RING_OF_DUELING5, ItemID.RING_OF_DUELING6,
+		ItemID.RING_OF_DUELING7, ItemID.RING_OF_DUELING8
+	);
 	public static Set<Integer> teleportItems = Set.of(25104);
 	// 11312 = hardwood grove
 	public static final int skillingRegionID = 11312;
@@ -227,6 +235,9 @@ public class leaguesChopperPlugin extends Plugin
 			case CRAFTING_GUILD:
 				targetMenu = new MenuEntry("", "", 3, MenuOpcode.CC_OP.getId(), -1, 25362447, false);
 				break;
+			case CASTLE_WARS:
+				targetMenu = new MenuEntry("", "", 3, MenuOpcode.CC_OP.getId(), -1, 25362455, false);
+				break;
 		}
 
 		menu.setEntry(targetMenu);
@@ -236,12 +247,9 @@ public class leaguesChopperPlugin extends Plugin
 	private void chop()
 	{
 		GameObject tree = object.findNearestGameObject(config.trees().gettreeObjID());
-
 		if (tree != null)
 		{
-			targetMenu = new MenuEntry("", "", tree.getId(), MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), tree.getSceneMinLocation().getX(), tree.getSceneMinLocation().getY(), false);
-			menu.setEntry(targetMenu);
-			mouse.delayMouseClick(tree.getConvexHull().getBounds(), sleepDelay());
+			utils.doGameObjectActionGameTick(tree, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), tickDelay());
 		}
 		else
 		{
@@ -254,88 +262,92 @@ public class leaguesChopperPlugin extends Plugin
 	{
 		GameObject bankTarget;
 		switch (config.banks())
-
 		{
 			case VER_SINHAZA:
 				bankTarget = object.findNearestGameObjectWithin(Banks.VER_SINHAZA.getBankLoc(), 0, Banks.VER_SINHAZA.getBankObjID());
-				if (bankTarget != null)
-				{
-					targetMenu =
-						new MenuEntry("", "", bankTarget.getId(), bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(), bankTarget.getSceneMinLocation().getY(),
-							false);
-					menu.setEntry(targetMenu);
-					mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), sleepDelay());
-				}
 				break;
-
-
+			case CASTLE_WARS:
+				bankTarget = object.findNearestGameObject(Banks.CASTLE_WARS.getBankObjID());
+				break;
 			case CRAFTING_GUILD:
 				bankTarget = object.findNearestGameObject(Banks.CRAFTING_GUILD.getBankObjID());
-				if (bankTarget != null)
-				{
-					targetMenu =
-						new MenuEntry("", "", bankTarget.getId(), bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(), bankTarget.getSceneMinLocation().getY(),
-							false);
-					menu.setEntry(targetMenu);
-					mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), sleepDelay());
-				}
 				break;
+			default:
+				bankTarget = null;
+				break;
+		}
+		if (bankTarget != null)
+		{
+			utils.doGameObjectActionGameTick(bankTarget, bank.getBankMenuOpcode(bankTarget.getId()), tickDelay());
 		}
 	}
 
 	public leaguesChopperState getState()
 	{
-		if (timeout > 0)
+		if (chinBreakHandler.shouldBreak(this))
+		{
+			return leaguesChopperState.HANDLE_BREAK;
+		}
+		else if (timeout > 0)
 		{
 			playerUtils.handleRun(20, 30);
 			return leaguesChopperState.TIMEOUT;
 		}
+		else if (player.getPoseAnimation() == 867)
+		{
+			return leaguesChopperState.ANIMATING;
+		}
 		else if (player.getPoseAnimation() != 819 && player.getPoseAnimation() != 824 && player.getPoseAnimation() != 1205 && player.getPoseAnimation() != 1210)
 		{
-			if (!bank.isOpen())
-			{
-				if (inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CRAFTING_GUILD.getRegionID() ||
-					inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.VER_SINHAZA.getRegionID())
-				{
-					return leaguesChopperState.OPEN_BANK;
-				}
-
-				if (!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CRAFTING_GUILD.getRegionID() ||
-					!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.VER_SINHAZA.getRegionID())
-				{
-					return leaguesChopperState.TELEPORT_CRYSTAL;
-				}
-
-				if (!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == skillingRegionID && client.getLocalPlayer().getAnimation() == -1)
-				{
-					return leaguesChopperState.CHOP;
-				}
-
-				if (inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == skillingRegionID)
-				{
-					return leaguesChopperState.TELEPORT_BANK;
-				}
-				return leaguesChopperState.ANIMATING;
-			}
-
-			if (bank.isOpen())
+			if (client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CRAFTING_GUILD.getRegionID() ||
+				client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.VER_SINHAZA.getRegionID() ||
+				client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CASTLE_WARS.getRegionID())
 			{
 				if (inventory.isFull())
 				{
+					if (!bank.isOpen())
+					{
+						return leaguesChopperState.OPEN_BANK;
+					}
 					return leaguesChopperState.DEPOSIT_ALL;
 				}
-
+				if (bank.isOpen())
+				{
+					utils.sendGameMessage("bank is open");
+					if (config.banks().equals(Banks.CASTLE_WARS) && !playerUtils.isItemEquipped(RINGS))
+					{
+						if (inventory.containsItem(ItemID.RING_OF_DUELING8))
+						{
+							return leaguesChopperState.EQUIP_RING;
+						}
+						else if (bank.contains(ItemID.RING_OF_DUELING8, 1))
+						{
+							return leaguesChopperState.WITHDRAW_RING;
+						}
+						else
+						{
+							utils.sendGameMessage("You have run out of Rings of Dueling. Plugin will now stop.");
+							startChopper = false;
+						}
+					}
+					return leaguesChopperState.CLOSE_BANK;
+				}
 				if (!inventory.isFull())
 				{
 					return leaguesChopperState.CLOSE_BANK;
 				}
-
-				if (chinBreakHandler.shouldBreak(this))
+				return leaguesChopperState.TELEPORT_CRYSTAL;
+			}
+			if (client.getLocalPlayer().getWorldLocation().getRegionID() == skillingRegionID)
+			{
+				if (inventory.isFull()){
+					return leaguesChopperState.TELEPORT_BANK;
+				}
+				if (client.getLocalPlayer().getAnimation() == -1)
 				{
-					return leaguesChopperState.HANDLE_BREAK;
+					return leaguesChopperState.CHOP;
 				}
 			}
-
 			return leaguesChopperState.IDLING;
 		}
 		else
@@ -359,7 +371,7 @@ public class leaguesChopperPlugin extends Plugin
 					return;
 				}
 
-				playerUtils.handleRun(40, 20);
+				playerUtils.handleRun(20, 40);
 				state = getState();
 				switch (state)
 				{
@@ -368,9 +380,8 @@ public class leaguesChopperPlugin extends Plugin
 					case ITERATING:
 					default:
 						break;
+					case ANIMATING:
 					case IDLING:
-						timeout = 1;
-						break;
 					case MOVING:
 						timeout = 1;
 						break;
@@ -380,15 +391,14 @@ public class leaguesChopperPlugin extends Plugin
 						break;
 					case CLOSE_BANK:
 						bank.close();
-						timeout = tickDelay();
-						break;
-					case CHOP:
-						chop();
 						timeout = 1 + tickDelay();
-						break;
 					case TELEPORT_CRYSTAL:
 						teleportCrystal();
 						timeout = 3 + tickDelay();
+						break;
+					case CHOP:
+						chop();
+						timeout = 2 + tickDelay();
 						break;
 					case TELEPORT_BANK:
 						teleportBank();
@@ -398,9 +408,21 @@ public class leaguesChopperPlugin extends Plugin
 						bank.depositAllExcept(teleportItems);
 						timeout = tickDelay();
 						break;
+					case EQUIP_RING:
+						targetMenu = new MenuEntry("Wear", "", 9, 1007, 0, 983043, true);
+						menu.setEntry(targetMenu);
+						mouse.delayMouseClick(inventory.getWidgetItem(ItemID.RING_OF_DUELING8).getCanvasBounds(), sleepDelay());
+						timeout = +1;
+						break;
+					case WITHDRAW_RING:
+						bank.withdrawItem(ItemID.RING_OF_DUELING8);
+						timeout = +1;
+						break;
 					case HANDLE_BREAK:
 						chinBreakHandler.startBreak(this);
 						timeout = 8;
+
+
 				}
 			}
 

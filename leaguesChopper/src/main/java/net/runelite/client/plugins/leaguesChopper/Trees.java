@@ -1,20 +1,16 @@
 package net.runelite.client.plugins.leaguesChopper;
 
-import net.runelite.api.ItemID;
-
 public enum Trees
 {
-	TEAK("Teak", ItemID.TEAK_LOGS, 9036),
-	MAHOGANY("Mahogany", ItemID.MAHOGANY_LOGS, 9034);
+	TEAK("Teak", 9036),
+	MAHOGANY("Mahogany", 9034);
 
 	private final String name;
-	private final Integer itemID;
 	private final Integer treeObjID;
 
-	Trees(String name, Integer itemID, Integer treeObjID)
+	Trees(String name, Integer treeObjID)
 	{
 		this.name = name;
-		this.itemID = itemID;
 		this.treeObjID = treeObjID;
 	}
 
@@ -23,10 +19,6 @@ public enum Trees
 		return this.name;
 	}
 
-	public Integer getItemID()
-	{
-		return this.itemID;
-	}
 
 	public Integer gettreeObjID()
 	{

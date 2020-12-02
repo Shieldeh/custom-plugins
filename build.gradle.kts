@@ -11,6 +11,7 @@ plugins {
     checkstyle
 }
 
+// Change this to your github
 project.extra["GithubUrl"] = "https://github.com/shieldeh/custom-plugins"
 
 apply<BootstrapPlugin>()
@@ -33,6 +34,7 @@ allprojects {
 subprojects {
     group = "com.openosrs.externals"
 
+    // Change these to your information
     project.extra["PluginProvider"] = "shieldeh"
     project.extra["ProjectSupportUrl"] = "https://discord.gg/9fGzEDR"
     project.extra["PluginLicense"] = "3-Clause BSD License"

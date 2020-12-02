@@ -70,7 +70,7 @@ import org.slf4j.LoggerFactory;
 @PluginDescriptor(
 	name = "Leagues - ZMI",
 	enabledByDefault = false,
-	description = "Leagues ZMI runecrafter, banks at Ver Sinhaza, Seers Village with Kandarin Hard, or Crafting Guild.",
+	description = "Leagues ZMI runecrafter, banks at Ver Sinhaza, Castle Wars, Seers Village with Kandarin Hard, or Crafting Guild.",
 	tags = {"zmi", "skill", "boat"},
 	type = PluginType.SKILLING
 )
@@ -120,6 +120,11 @@ public class leaguesZMIPlugin extends Plugin
 		ItemID.AIR_RUNE, ItemID.WATER_RUNE, ItemID.EARTH_RUNE, ItemID.FIRE_RUNE,
 		ItemID.MIND_RUNE, ItemID.CHAOS_RUNE, ItemID.DEATH_RUNE, ItemID.BLOOD_RUNE,
 		ItemID.BODY_RUNE, ItemID.COSMIC_RUNE, ItemID.NATURE_RUNE);
+	public static Set<Integer> RINGS = Set.of(
+		ItemID.RING_OF_DUELING1, ItemID.RING_OF_DUELING2, ItemID.RING_OF_DUELING3,
+		ItemID.RING_OF_DUELING4, ItemID.RING_OF_DUELING5, ItemID.RING_OF_DUELING6,
+		ItemID.RING_OF_DUELING7, ItemID.RING_OF_DUELING8
+	);
 	public static Set<Integer> STAVES = Set.of(
 		ItemID.MYSTIC_AIR_STAFF, ItemID.STAFF_OF_AIR, ItemID.AIR_BATTLESTAFF,
 		ItemID.SMOKE_BATTLESTAFF, ItemID.MYSTIC_SMOKE_STAFF, ItemID.MIST_BATTLESTAFF,
@@ -228,12 +233,16 @@ public class leaguesZMIPlugin extends Plugin
 		mouse.delayMouseClick(inventory.getWidgetItem(25104).getCanvasBounds(), sleepDelay());
 	}
 
+
 	private void teleportBank()
 	{
 		switch (config.banks())
 		{
 			case VER_SINHAZA:
 				targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), -1, 25362448, false);
+				break;
+			case CASTLE_WARS:
+				targetMenu = new MenuEntry("", "", 3, MenuOpcode.CC_OP.getId(), -1, 25362455, false);
 				break;
 			case CRAFTING_GUILD:
 				targetMenu = new MenuEntry("", "", 3, MenuOpcode.CC_OP.getId(), -1, 25362447, false);
@@ -276,57 +285,32 @@ public class leaguesZMIPlugin extends Plugin
 	{
 		GameObject bankTarget;
 		switch (config.banks())
-
 		{
 			case VER_SINHAZA:
 				bankTarget = object.findNearestGameObjectWithin(Banks.VER_SINHAZA.getBankLoc(), 0, Banks.VER_SINHAZA.getBankObjID());
-
-				if (bankTarget != null)
-				{
-					targetMenu =
-						new MenuEntry("", "", bankTarget.getId(), bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(), bankTarget.getSceneMinLocation().getY(),
-							false);
-					menu.setEntry(targetMenu);
-					mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), sleepDelay());
-				}
-
 				break;
-
-
+			case CASTLE_WARS:
+				bankTarget = object.findNearestGameObject(Banks.CASTLE_WARS.getBankObjID());
+				break;
 			case CRAFTING_GUILD:
 				bankTarget = object.findNearestGameObject(Banks.CRAFTING_GUILD.getBankObjID());
-
-				if (bankTarget != null)
-				{
-					targetMenu =
-						new MenuEntry("", "", bankTarget.getId(), bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(), bankTarget.getSceneMinLocation().getY(),
-							false);
-					menu.setEntry(targetMenu);
-					mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), sleepDelay());
-				}
-
 				break;
-
-
 			case SEERS:
 				bankTarget = object.findNearestGameObject(Banks.SEERS.getBankObjID());
-
-				if (bankTarget != null)
-				{
-					targetMenu =
-						new MenuEntry("", "", bankTarget.getId(), bank.getBankMenuOpcode(bankTarget.getId()), bankTarget.getSceneMinLocation().getX(), bankTarget.getSceneMinLocation().getY(),
-							false);
-					menu.setEntry(targetMenu);
-					mouse.delayMouseClick(bankTarget.getConvexHull().getBounds(), sleepDelay());
-				}
-
 				break;
+			default:
+				bankTarget = null;
+				break;
+		}
+		if (bankTarget != null)
+		{
+			utils.doGameObjectActionGameTick(bankTarget, bank.getBankMenuOpcode(bankTarget.getId()), tickDelay());
 		}
 	}
 
 	private void withdrawEss()
 	{
-		if (bank.contains(ItemID.DAEYALT_ESSENCE, 27))
+		if (bank.contains(ItemID.DAEYALT_ESSENCE, 1))
 		{
 			bank.withdrawAllItem(ItemID.DAEYALT_ESSENCE);
 		}
@@ -340,6 +324,10 @@ public class leaguesZMIPlugin extends Plugin
 
 	public leaguesZMIState getState()
 	{
+		if (chinBreakHandler.shouldBreak(this))
+		{
+			return leaguesZMIState.HANDLE_BREAK;
+		}
 		if (timeout > 0)
 		{
 			playerUtils.handleRun(20, 30);
@@ -347,64 +335,65 @@ public class leaguesZMIPlugin extends Plugin
 		}
 		else if (player.getPoseAnimation() != 819 && player.getPoseAnimation() != 824 && player.getPoseAnimation() != 1205 && player.getPoseAnimation() != 1210)
 		{
-			if (!bank.isOpen())
+			if (client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CRAFTING_GUILD.getRegionID() ||
+				client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.VER_SINHAZA.getRegionID() ||
+				client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.SEERS.getRegionID() ||
+				client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CASTLE_WARS.getRegionID())
 			{
-				if (!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CRAFTING_GUILD.getRegionID() ||
-					!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.VER_SINHAZA.getRegionID() ||
-					!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.SEERS.getRegionID()
-				)
+				if (!inventory.isFull() && !bank.isOpen())
 				{
 					return leaguesZMIState.OPEN_BANK;
 				}
-
-				if (inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.CRAFTING_GUILD.getRegionID() ||
-					inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.VER_SINHAZA.getRegionID() ||
-					inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == Banks.SEERS.getRegionID()
-				)
+				if (bank.isOpen())
+				{
+					if (!bank.contains(ItemID.PURE_ESSENCE, 1))
+					{
+						utils.sendGameMessage("You have run out of Daeyalt and Pure Essence. Ending Plugin now.");
+						return leaguesZMIState.OUT_OF_ESSENCE;
+					}
+					if (inventory.containsItem(RUNES))
+					{
+						return leaguesZMIState.DEPOSIT_ALL;
+					}
+					else if (config.banks().equals(Banks.CASTLE_WARS) && !playerUtils.isItemEquipped(RINGS))
+					{
+						utils.sendGameMessage("No rings equipped");
+						if (inventory.containsItem(ItemID.RING_OF_DUELING8))
+						{
+							return leaguesZMIState.EQUIP_RING;
+						}
+						else if (bank.contains(ItemID.RING_OF_DUELING8, 1))
+						{
+							return leaguesZMIState.WITHDRAW_RING;
+						}
+						else
+						{
+							utils.sendGameMessage("You have run out of Rings of Dueling. Plugin will now stop.");
+							startZMI = false;
+						}
+					}
+					else if (inventory.isFull())
+					{
+						return leaguesZMIState.CLOSE_BANK;
+					}
+					else
+					{
+						return leaguesZMIState.WITHDRAW_ESSENCE;
+					}
+				}
+				if (inventory.isFull())
 				{
 					return leaguesZMIState.TELEPORT_CRYSTAL;
 				}
-
-				if (!inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == skillingRegionID)
+			}
+			if (client.getLocalPlayer().getWorldLocation().getRegionID() == skillingRegionID)
+			{
+				if (!inventory.isFull())
 				{
 					return leaguesZMIState.TELEPORT_BANK;
 				}
-
-				if (inventory.isFull() && client.getLocalPlayer().getWorldLocation().getRegionID() == skillingRegionID)
-				{
-					return leaguesZMIState.CRAFT;
-				}
+				return leaguesZMIState.CRAFT;
 			}
-
-			if (bank.isOpen())
-			{
-				if (!bank.contains(ItemID.PURE_ESSENCE, 27))
-				{
-					utils.sendGameMessage("get more pure essence");
-					return leaguesZMIState.OUT_OF_ESSENCE;
-				}
-
-				if (inventory.containsItem(RUNES))
-				{
-					return leaguesZMIState.DEPOSIT_ALL;
-				}
-
-				if (!inventory.isFull() && !inventory.containsItem(RUNES))
-				{
-					return leaguesZMIState.WITHDRAW_ESSENCE;
-				}
-
-				if (inventory.isFull())
-				{
-					return leaguesZMIState.CLOSE_BANK;
-				}
-
-				if (chinBreakHandler.shouldBreak(this))
-				{
-					return leaguesZMIState.HANDLE_BREAK;
-				}
-			}
-
 			return leaguesZMIState.IDLING;
 		}
 		else
@@ -428,7 +417,7 @@ public class leaguesZMIPlugin extends Plugin
 					return;
 				}
 
-				playerUtils.handleRun(40, 20);
+				playerUtils.handleRun(20, 40);
 				state = getState();
 				switch (state)
 				{
@@ -449,26 +438,39 @@ public class leaguesZMIPlugin extends Plugin
 						break;
 					case CLOSE_BANK:
 						bank.close();
-						timeout = tickDelay();
-						break;
-					case CRAFT:
-						craft();
-						timeout = tickDelay();
-						break;
+						timeout = 1 + tickDelay();
 					case TELEPORT_CRYSTAL:
 						teleportCrystal();
-						timeout = 3 + tickDelay();
+						timeout = 1 + tickDelay();
 						break;
 					case TELEPORT_BANK:
 						teleportBank();
 						timeout = 3 + tickDelay();
 						break;
+					case CRAFT:
+						craft();
+						timeout = tickDelay();
+						break;
 					case DEPOSIT_ALL:
 						bank.depositAll();
 						timeout = tickDelay();
 						break;
+					case EQUIP_RING:
+						utils.sendGameMessage("Equipping a fresh ring");
+						targetMenu = new MenuEntry("Wear", "", 9, 1007, 0, 983043, true);
+						menu.setEntry(targetMenu);
+						utils.sendGameMessage(targetMenu + "");
+						mouse.delayMouseClick(inventory.getWidgetItem(ItemID.RING_OF_DUELING8).getCanvasBounds(), sleepDelay());
+						timeout = +1;
+						break;
+					case WITHDRAW_RING:
+						utils.sendGameMessage("Withdrawing a fresh ring");
+						bank.withdrawItem(ItemID.RING_OF_DUELING8);
+						timeout = +1;
+						break;
 					case WITHDRAW_ESSENCE:
 						withdrawEss();
+						timeout = +1;
 						break;
 					case OUT_OF_ESSENCE:
 						if (config.logout())

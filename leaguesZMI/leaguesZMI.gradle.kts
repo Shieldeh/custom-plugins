@@ -23,15 +23,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.2.2"
+version = "1.3.0"
 
 project.extra["PluginName"] = "Leagues - ZMI"
-project.extra["PluginDescription"] = "Leagues ZMI runecrafter, banks at Ver Sinhaza, Seers Village with Kandarin Hard, or Crafting Guild."
+project.extra["PluginDescription"] = "Leagues ZMI runecrafter, banks at Ver Sinhaza, Castle Wars, Seers Village with Kandarin Hard, or Crafting Guild."
 project.extra["ProjectUrl"] = "https://discord.gg/2j7aQQA8RA"
 
 dependencies {
-    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "1.0.0+")
-    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.13+")
+    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "2.3.1")
+    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.16")
 }
 
 tasks {
