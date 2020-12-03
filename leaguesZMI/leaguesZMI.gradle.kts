@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.3.1"
+version = "1.3.3"
 
 project.extra["PluginName"] = "Leagues - ZMI"
 project.extra["PluginDescription"] = "Leagues ZMI runecrafter, banks at Ver Sinhaza, Castle Wars, Seers Village with Kandarin Hard, or Crafting Guild."
