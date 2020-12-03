@@ -59,7 +59,7 @@ open class BootstrapTask : DefaultTask() {
                             "version" to it.project.version,
                             "requires" to ProjectVersions.apiVersion,
                             "date" to formatDate(Date()),
-                            "url" to "https://github.com/shieldeh/custom-Plugins/blob/master/release/${it.project.name}-${it.project.version}.jar",
+                            "url" to "https://github.com/shieldeh/custom-Plugins/blob/master/release/${it.project.name}-${it.project.version}.jar?raw=true",
                             "sha512sum" to hash(plugin.readBytes())
                     ))
 
