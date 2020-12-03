@@ -2,6 +2,7 @@ rootProject.name = "shieldehsplugins"
 
 include(":leaguesChopper")
 include(":leaguesZMI")
+include(":leaguesPlanker")
 
 
 for (project in rootProject.children) {
