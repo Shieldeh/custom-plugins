@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.0"
+version = "1.0.1"
 
 project.extra["PluginName"] = "Leagues - Planker"
 project.extra["PluginDescription"] = "Leagues Planker, banks at Ver Sinhaza, Castle Wars, Seers Village with Kandarin Hard, or Crafting Guild."
