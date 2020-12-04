@@ -225,6 +225,14 @@ public class leaguesChopperPlugin extends Plugin
 		mouse.delayMouseClick(inventory.getWidgetItem(25104).getCanvasBounds(), sleepDelay());
 	}
 
+	private void equipRingInBank()
+	{
+		// ForceLeftClick must be true to click on an item in the inventory while the bank is open.
+		targetMenu = new MenuEntry("Wear", "Ring of Dueling (8)", 9, 1007, inventory.getWidgetItem(ItemID.RING_OF_DUELING8).getIndex(), 983043, true);
+		menu.setEntry(targetMenu);
+		mouse.delayMouseClick(inventory.getWidgetItem(ItemID.RING_OF_DUELING8).getCanvasBounds(), sleepDelay());
+	}
+
 	private void teleportBank()
 	{
 		switch (config.banks())
@@ -313,7 +321,7 @@ public class leaguesChopperPlugin extends Plugin
 				}
 				if (bank.isOpen())
 				{
-					utils.sendGameMessage("bank is open");
+					//utils.sendGameMessage("bank is open");
 					if (config.banks().equals(Banks.CASTLE_WARS) && !playerUtils.isItemEquipped(RINGS))
 					{
 						if (inventory.containsItem(ItemID.RING_OF_DUELING8))
@@ -335,6 +343,10 @@ public class leaguesChopperPlugin extends Plugin
 				if (!inventory.isFull())
 				{
 					return leaguesChopperState.CLOSE_BANK;
+				}
+				if (config.banks().equals(Banks.CASTLE_WARS) && !playerUtils.isItemEquipped(RINGS))
+				{
+					return leaguesChopperState.OPEN_BANK;
 				}
 				return leaguesChopperState.TELEPORT_CRYSTAL;
 			}
@@ -409,9 +421,7 @@ public class leaguesChopperPlugin extends Plugin
 						timeout = tickDelay();
 						break;
 					case EQUIP_RING:
-						targetMenu = new MenuEntry("Wear", "", 9, 1007, 0, 983043, true);
-						menu.setEntry(targetMenu);
-						mouse.delayMouseClick(inventory.getWidgetItem(ItemID.RING_OF_DUELING8).getCanvasBounds(), sleepDelay());
+						equipRingInBank();
 						timeout = +1;
 						break;
 					case WITHDRAW_RING:

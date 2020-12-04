@@ -1,4 +1,4 @@
-rootProject.name = "shieldehsplugins"
+rootProject.name = "custom-plugins"
 
 include(":leaguesChopper")
 include(":leaguesZMI")

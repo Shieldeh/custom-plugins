@@ -233,6 +233,13 @@ public class leaguesPlankerPlugin extends Plugin
 		mouse.delayMouseClick(inventory.getWidgetItem(25104).getCanvasBounds(), sleepDelay());
 	}
 
+	private void equipRingInBank()
+	{
+		targetMenu = new MenuEntry("Wear", "Ring of Dueling (8)", 9, 1007, inventory.getWidgetItem(ItemID.RING_OF_DUELING8).getIndex(), 983043, true);
+		menu.setEntry(targetMenu);
+		mouse.delayMouseClick(inventory.getWidgetItem(ItemID.RING_OF_DUELING8).getCanvasBounds(), sleepDelay());
+	}
+
 	private void teleportBank()
 	{
 		switch (config.banks())
@@ -424,6 +431,11 @@ public class leaguesPlankerPlugin extends Plugin
 				}
 				else if (inventory.containsItem(config.logs().getItemIDLogs()) && inventory.containsStackAmount(ItemID.COINS_995, (42000)))
 				{
+					if (config.banks().equals(Banks.CASTLE_WARS) && !playerUtils.isItemEquipped(RINGS))
+					{
+						utils.sendGameMessage("Start the script with an empty inventory if you want to use this bank.");
+						startPlanker = false;
+					}
 					return leaguesPlankerState.TELEPORT_CRYSTAL;
 				}
 				else {
@@ -485,28 +497,25 @@ public class leaguesPlankerPlugin extends Plugin
 						timeout = 1 + tickDelay();
 						break;
 					case EQUIP_RING:
-						utils.sendGameMessage("Equipping a fresh ring");
-						targetMenu = new MenuEntry("Wear", "", 9, 1007, 0, 983043, true);
-						menu.setEntry(targetMenu);
-						mouse.delayMouseClick(inventory.getWidgetItem(ItemID.RING_OF_DUELING8).getCanvasBounds(), sleepDelay());
-						timeout = 1;
+						equipRingInBank();
+						timeout = +1;
 						break;
 					case WITHDRAW_RING:
-						utils.sendGameMessage("Withdrawing a fresh ring");
+						//utils.sendGameMessage("Withdrawing a fresh ring");
 						bank.withdrawItem(ItemID.RING_OF_DUELING8);
 						timeout = 1;
 						break;
 					case CLOSE_BANK:
 						bank.close();
-						timeout = tickDelay();
+						timeout = 1 + tickDelay();
 						break;
 					case CLICK_PLANK_WIDGET:
 						clickPlankWidget();
-						timeout = tickDelay();
+						timeout = 1 + tickDelay();
 						break;
 					case INTERACT_SAWMILL:
 						openPlankMenu();
-						timeout = tickDelay();
+						timeout = 1 + tickDelay();
 						break;
 					case TELEPORT_CRYSTAL:
 						teleportCrystal();
@@ -518,10 +527,11 @@ public class leaguesPlankerPlugin extends Plugin
 						break;
 					case DEPOSIT_ALL_PLANKS:
 						bank.depositAllOfItem(config.logs().getItemIDPlanks());
-						timeout = tickDelay();
+						timeout = 1 + tickDelay();
 						break;
 					case WITHDRAW_LOGS:
 						withdrawLogs();
+						timeout = 1 + tickDelay();
 						break;
 					case WITHDRAW_LAWS:
 						bank.withdrawAllItem(ItemID.LAW_RUNE);

@@ -23,7 +23,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.1.4"
+version = "1.1.6"
 
 project.extra["PluginName"] = "Leagues - Chopper"
 project.extra["PluginDescription"] = "Leagues hardwood cutter, banks at Ver Sinhaza, Castle Wars, or Crafting Guild."

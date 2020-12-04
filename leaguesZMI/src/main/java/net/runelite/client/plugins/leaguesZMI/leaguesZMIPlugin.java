@@ -233,6 +233,12 @@ public class leaguesZMIPlugin extends Plugin
 		mouse.delayMouseClick(inventory.getWidgetItem(25104).getCanvasBounds(), sleepDelay());
 	}
 
+	private void equipRingInBank()
+	{
+		targetMenu = new MenuEntry("Wear", "Ring of Dueling (8)", 9, 1007, inventory.getWidgetItem(ItemID.RING_OF_DUELING8).getIndex(), 983043, true);
+		menu.setEntry(targetMenu);
+		mouse.delayMouseClick(inventory.getWidgetItem(ItemID.RING_OF_DUELING8).getCanvasBounds(), sleepDelay());
+	}
 
 	private void teleportBank()
 	{
@@ -383,6 +389,11 @@ public class leaguesZMIPlugin extends Plugin
 				}
 				if (inventory.isFull())
 				{
+					if (config.banks().equals(Banks.CASTLE_WARS) && !playerUtils.isItemEquipped(RINGS))
+					{
+						utils.sendGameMessage("Start the script with an empty inventory if you want to use this bank.");
+						startZMI = false;
+					}
 					return leaguesZMIState.TELEPORT_CRYSTAL;
 				}
 			}
@@ -456,15 +467,10 @@ public class leaguesZMIPlugin extends Plugin
 						timeout = tickDelay();
 						break;
 					case EQUIP_RING:
-						utils.sendGameMessage("Equipping a fresh ring");
-						targetMenu = new MenuEntry("Wear", "", 9, 1007, 0, 983043, true);
-						menu.setEntry(targetMenu);
-						utils.sendGameMessage(targetMenu + "");
-						mouse.delayMouseClick(inventory.getWidgetItem(ItemID.RING_OF_DUELING8).getCanvasBounds(), sleepDelay());
+						equipRingInBank();
 						timeout = +1;
 						break;
 					case WITHDRAW_RING:
-						utils.sendGameMessage("Withdrawing a fresh ring");
 						bank.withdrawItem(ItemID.RING_OF_DUELING8);
 						timeout = +1;
 						break;
