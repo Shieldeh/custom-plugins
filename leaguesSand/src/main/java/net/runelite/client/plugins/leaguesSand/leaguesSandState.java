@@ -1,0 +1,22 @@
+package net.runelite.client.plugins.leaguesSand;
+
+public enum leaguesSandState
+{
+	HANDLE_BREAK,
+	TIMEOUT,
+	ITERATING,
+	ANIMATING,
+	IDLING,
+	DEPOSIT_ALL,
+	OPEN_BANK,
+	MOVING,
+	FILL,
+	OUT_OF_BUCKETS,
+	WITHDRAW_BUCKETS,
+	TELEPORT_CRYSTAL,
+	TELEPORT_BANK,
+	WITHDRAW_RING,
+	EQUIP_RING,
+	CLOSE_BANK
+
+	}

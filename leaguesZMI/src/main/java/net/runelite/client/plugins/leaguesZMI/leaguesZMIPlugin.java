@@ -393,8 +393,9 @@ public class leaguesZMIPlugin extends Plugin
 					{
 						utils.sendGameMessage("Start the script with an empty inventory if you want to use this bank.");
 						startZMI = false;
+					} else {
+						return leaguesZMIState.TELEPORT_CRYSTAL;
 					}
-					return leaguesZMIState.TELEPORT_CRYSTAL;
 				}
 			}
 			if (client.getLocalPlayer().getWorldLocation().getRegionID() == skillingRegionID)

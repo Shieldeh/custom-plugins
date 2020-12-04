@@ -3,6 +3,7 @@ rootProject.name = "custom-plugins"
 include(":leaguesChopper")
 include(":leaguesZMI")
 include(":leaguesPlanker")
+include(":leaguesSand")
 
 
 for (project in rootProject.children) {

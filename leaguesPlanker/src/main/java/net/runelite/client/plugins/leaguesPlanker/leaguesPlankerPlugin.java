@@ -435,8 +435,10 @@ public class leaguesPlankerPlugin extends Plugin
 					{
 						utils.sendGameMessage("Start the script with an empty inventory if you want to use this bank.");
 						startPlanker = false;
+					} else
+					{
+						return leaguesPlankerState.TELEPORT_CRYSTAL;
 					}
-					return leaguesPlankerState.TELEPORT_CRYSTAL;
 				}
 				else {
 					utils.sendGameMessage("You are below 42000gp left in your inventory. Plugin will now stop.");
