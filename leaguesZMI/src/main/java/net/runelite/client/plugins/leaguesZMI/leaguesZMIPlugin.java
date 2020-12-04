@@ -457,7 +457,7 @@ public class leaguesZMIPlugin extends Plugin
 						break;
 					case TELEPORT_BANK:
 						teleportBank();
-						timeout = 3 + tickDelay();
+						timeout = 2 + tickDelay();
 						break;
 					case CRAFT:
 						craft();

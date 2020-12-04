@@ -525,7 +525,7 @@ public class leaguesPlankerPlugin extends Plugin
 						break;
 					case TELEPORT_BANK:
 						teleportBank();
-						timeout = 1 + tickDelay();
+						timeout = 2 + tickDelay();
 						break;
 					case DEPOSIT_ALL_PLANKS:
 						bank.depositAllOfItem(config.logs().getItemIDPlanks());

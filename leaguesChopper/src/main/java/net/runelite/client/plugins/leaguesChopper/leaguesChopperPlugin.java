@@ -416,7 +416,7 @@ public class leaguesChopperPlugin extends Plugin
 						break;
 					case TELEPORT_BANK:
 						teleportBank();
-						timeout = 3 + tickDelay();
+						timeout = 2 + tickDelay();
 						break;
 					case DEPOSIT_ALL:
 						bank.depositAllExcept(teleportItems);
