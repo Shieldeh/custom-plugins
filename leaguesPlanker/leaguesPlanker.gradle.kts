@@ -23,15 +23,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.8"
+version = "1.0.9"
 
 project.extra["PluginName"] = "Leagues - Planker"
 project.extra["PluginDescription"] = "Leagues Planker, banks at Ver Sinhaza, Castle Wars, Seers Village(Kandarin Hard), or Crafting Guild."
 project.extra["ProjectUrl"] = "https://discord.gg/2j7aQQA8RA"
 
 dependencies {
-    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "2.3.3")
-    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.16")
+    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "2.3.4+")
+    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.16+")
 }
 
 tasks {

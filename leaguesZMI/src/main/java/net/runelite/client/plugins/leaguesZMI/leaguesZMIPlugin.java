@@ -210,6 +210,7 @@ public class leaguesZMIPlugin extends Plugin
 	{
 		if (event.getGroup() == "leaguesZMI")
 		{
+
 		}
 	}
 
@@ -324,7 +325,6 @@ public class leaguesZMIPlugin extends Plugin
 		{
 			bank.withdrawAllItem(ItemID.PURE_ESSENCE);
 		}
-
 		timeout = 0 + tickDelay();
 	}
 
@@ -393,7 +393,9 @@ public class leaguesZMIPlugin extends Plugin
 					{
 						utils.sendGameMessage("Start the script with an empty inventory if you want to use this bank.");
 						startZMI = false;
-					} else {
+					}
+					else
+					{
 						return leaguesZMIState.TELEPORT_CRYSTAL;
 					}
 				}

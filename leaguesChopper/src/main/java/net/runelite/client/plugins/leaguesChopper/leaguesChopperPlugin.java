@@ -117,8 +117,7 @@ public class leaguesChopperPlugin extends Plugin
 	public static Set<Integer> RINGS = Set.of(
 		ItemID.RING_OF_DUELING1, ItemID.RING_OF_DUELING2, ItemID.RING_OF_DUELING3,
 		ItemID.RING_OF_DUELING4, ItemID.RING_OF_DUELING5, ItemID.RING_OF_DUELING6,
-		ItemID.RING_OF_DUELING7, ItemID.RING_OF_DUELING8
-	);
+		ItemID.RING_OF_DUELING7, ItemID.RING_OF_DUELING8);
 	public static Set<Integer> teleportItems = Set.of(25104);
 	// 11312 = hardwood grove
 	public static final int skillingRegionID = 11312;

@@ -23,15 +23,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.0.0"
+version = "1.0.1"
 
 project.extra["PluginName"] = "Leagues - Sand"
 project.extra["PluginDescription"] = "Leagues hardwood cutter, banks at Ver Sinhaza, Castle Wars, or Crafting Guild."
 project.extra["ProjectUrl"] = "https://discord.gg/2j7aQQA8RA"
 
 dependencies {
-    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "2.3.3")
-    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.16")
+    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "2.3.4+")
+    compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.16+")
 }
 
 tasks {

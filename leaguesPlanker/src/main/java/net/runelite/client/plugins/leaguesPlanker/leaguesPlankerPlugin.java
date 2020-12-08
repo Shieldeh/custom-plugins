@@ -543,7 +543,6 @@ public class leaguesPlankerPlugin extends Plugin
 						{
 							interfaceUtils.logout();
 						}
-
 						startPlanker = false;
 						resetVals();
 						break;

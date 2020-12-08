@@ -264,7 +264,6 @@ public class leaguesSandPlugin extends Plugin
 				}
 				break;
 		}
-
 		menu.setEntry(targetMenu);
 		mouse.delayClickRandomPointCenter(100, 100, sleepDelay());
 	}
