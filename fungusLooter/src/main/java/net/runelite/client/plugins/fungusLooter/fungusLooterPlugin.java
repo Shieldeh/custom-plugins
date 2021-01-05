@@ -363,7 +363,6 @@ public class fungusLooterPlugin extends Plugin
 					}
 					if (!inventory.containsItem(ItemID.MORT_MYRE_FUNGUS))
 					{
-						if (playerUtils.drinkStamPot(50))
 						return fungusLooterState.CLOSE_BANK;
 					}
 					else
