@@ -4,7 +4,9 @@ include(":leaguesChopper")
 include(":leaguesZMI")
 include(":leaguesPlanker")
 include(":leaguesSand")
-
+//include(":prayerPOH")
+//include(":tokenFarmer")
+include(":fungusLooter")
 
 for (project in rootProject.children) {
     project.apply {

@@ -1,0 +1,24 @@
+package net.runelite.client.plugins.fungusLooter;
+
+public enum fungusLooterState
+{
+
+	HANDLE_BREAK,
+	TIMEOUT,
+	ITERATING,
+	ANIMATING,
+	IDLING,
+	DEPOSIT_ALL,
+	OPEN_BANK,
+	MOVING,
+	BLOOM,
+	PICK_FUNGUS,
+	PRAY,
+	RUN_TO_BANK,
+	RUN_TO_RING,
+	RUN_TO_LOGS,
+	TELEPORT_RING,
+	TELEPORT_ALTAR,
+	CLOSE_BANK
+
+}

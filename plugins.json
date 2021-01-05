@@ -2,6 +2,22 @@
   {
     "projectUrl": "https://discord.gg/2j7aQQA8RA",
     "provider": "shieldeh",
+    "name": "Fungus Looter",
+    "description": "Loots fungus, uses ardy cape to restore prayer, banks at zanaris.",
+    "id": "funguslooter-plugin",
+    "releases": [
+      {
+        "date": "2021-01-05",
+        "sha512sum": "88EE3EA810081AF34A7DCECA0FE34C1DE054A3CF58F71534AB9CF0F4B3FCE02A5C180F4C6C1966A813D01D8F3CB9FBA279BC6F90363A2B5BE3FDDFBCE2C45F06",
+        "version": "1.0.0",
+        "url": "https://github.com/shieldeh/custom-Plugins/blob/master/release/fungusLooter-1.0.0.jar?raw=true",
+        "requires": "0.0.1"
+      }
+    ]
+  },
+  {
+    "projectUrl": "https://discord.gg/2j7aQQA8RA",
+    "provider": "shieldeh",
     "name": "Leagues - Chopper",
     "description": "Leagues hardwood cutter, banks at Ver Sinhaza, Castle Wars, or Crafting Guild.",
     "id": "leagueschopper-plugin",
