@@ -307,6 +307,7 @@ public class fungusLooterPlugin extends Plugin
 	{
 		if (playerUtils.isItemEquipped(CAPES))
 		{
+			//Fixed this by updating actionParam1 by adding +1.
 			targetMenu = new MenuEntry("", "", 2, MenuAction.CC_OP.getId(), -1, 25362448, false);
 			menu.setEntry(targetMenu);
 			mouse.delayClickRandomPointCenter(100, 100, sleepDelay());

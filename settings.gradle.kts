@@ -1,6 +1,6 @@
 rootProject.name = "custom-plugins"
 
-include(":prayerPOH")
+//include(":prayerPOH")
 include(":fungusLooter")
 
 for (project in rootProject.children) {
