@@ -303,6 +303,7 @@ public class fungusLooterPlugin extends Plugin
 		}
 	}
 
+	// Teleports to the Ardy Altar using the Ardy Cape that is equipped.
 	private void teleportAltar()
 	{
 		if (playerUtils.isItemEquipped(CAPES))
