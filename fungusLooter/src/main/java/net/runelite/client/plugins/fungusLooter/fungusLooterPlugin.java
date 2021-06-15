@@ -35,8 +35,8 @@ import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.ItemID;
+import net.runelite.api.MenuAction;
 import net.runelite.api.MenuEntry;
-import net.runelite.api.MenuOpcode;
 import net.runelite.api.NPC;
 import net.runelite.api.NpcID;
 import net.runelite.api.ObjectID;
@@ -56,7 +56,6 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDependency;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.plugins.PluginManager;
-import net.runelite.client.plugins.PluginType;
 import net.runelite.client.plugins.iutils.BankUtils;
 import net.runelite.client.plugins.iutils.CalculationUtils;
 import net.runelite.client.plugins.iutils.InterfaceUtils;
@@ -78,8 +77,7 @@ import org.pf4j.Extension;
 	name = "Fungus Looter",
 	enabledByDefault = false,
 	description = "Farms Mort Myre Fungus",
-	tags = {"money", "herblore", "boat"},
-	type = PluginType.MISCELLANEOUS
+	tags = {"money", "herblore", "boat"}
 )
 @Slf4j
 public class fungusLooterPlugin extends Plugin
@@ -239,7 +237,7 @@ public class fungusLooterPlugin extends Plugin
 		GameObject altar = object.findNearestGameObject(ObjectID.ALTAR);
 		if (altar != null && altar.getConvexHull() != null)
 		{
-			utils.doGameObjectActionGameTick(altar, MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId(), tickDelay());
+			utils.doGameObjectActionGameTick(altar, MenuAction.GAME_OBJECT_FIRST_OPTION.getId(), tickDelay());
 		}
 		else
 		{
@@ -254,7 +252,7 @@ public class fungusLooterPlugin extends Plugin
 		GameObject fungus = object.findNearestGameObject(ObjectID.FUNGI_ON_LOG);
 		if (fungus != null && fungus.getConvexHull() != null)
 		{
-			utils.doGameObjectActionGameTick(fungus, MenuOpcode.GAME_OBJECT_SECOND_OPTION.getId(), tickDelay());
+			utils.doGameObjectActionGameTick(fungus, MenuAction.GAME_OBJECT_SECOND_OPTION.getId(), tickDelay());
 		}
 		else
 		{
@@ -269,7 +267,7 @@ public class fungusLooterPlugin extends Plugin
 		if (inventory.containsItem(ItemID.SILVER_SICKLE_B))
 		{
 			WidgetItem bloom = inventory.getWidgetItem(ItemID.SILVER_SICKLE_B);
-			utils.doItemActionGameTick(bloom, MenuOpcode.ITEM_THIRD_OPTION.getId(), 9764864, tickDelay());
+			utils.doItemActionGameTick(bloom, MenuAction.ITEM_THIRD_OPTION.getId(), 9764864, tickDelay());
 		}
 		else
 		{
@@ -285,13 +283,13 @@ public class fungusLooterPlugin extends Plugin
 		{
 
 			fairyRing = object.findNearestGameObject(29495);
-			ringOpcode = MenuOpcode.GAME_OBJECT_FIRST_OPTION.getId();
+			ringOpcode = MenuAction.GAME_OBJECT_FIRST_OPTION.getId();
 		}
 		if (client.getLocalPlayer().getWorldLocation().getRegionID() == zanarisRegionID)
 		{
 
 			fairyRing = object.findNearestGameObject(29560);
-			ringOpcode = MenuOpcode.GAME_OBJECT_THIRD_OPTION.getId();
+			ringOpcode = MenuAction.GAME_OBJECT_THIRD_OPTION.getId();
 		}
 
 		if (fairyRing != null)
@@ -309,7 +307,7 @@ public class fungusLooterPlugin extends Plugin
 	{
 		if (playerUtils.isItemEquipped(CAPES))
 		{
-			targetMenu = new MenuEntry("", "", 2, MenuOpcode.CC_OP.getId(), -1, 25362447, false);
+			targetMenu = new MenuEntry("", "", 2, MenuAction.CC_OP.getId(), -1, 25362448, false);
 			menu.setEntry(targetMenu);
 			mouse.delayClickRandomPointCenter(100, 100, sleepDelay());
 		}

@@ -7,17 +7,10 @@
     "id": "funguslooter-plugin",
     "releases": [
       {
-        "date": "2021-01-05",
-        "sha512sum": "88EE3EA810081AF34A7DCECA0FE34C1DE054A3CF58F71534AB9CF0F4B3FCE02A5C180F4C6C1966A813D01D8F3CB9FBA279BC6F90363A2B5BE3FDDFBCE2C45F06",
-        "version": "1.0.0",
-        "url": "https://github.com/shieldeh/custom-Plugins/blob/master/release/fungusLooter-1.0.0.jar?raw=true",
-        "requires": "0.0.1"
-      },
-      {
-        "date": "2021-01-05",
-        "sha512sum": "0EB4CF20D7DA481621A2CA38D30578B6980C100A443A87C8E5B47843F5805321AC2AA3308A043A0614735BA9B3368F80F847AFCB75360EB0B0C4F2B83249C9C4",
-        "version": "1.0.1",
-        "url": "https://github.com/shieldeh/custom-Plugins/blob/master/release/fungusLooter-1.0.1.jar?raw=true",
+        "date": "2021-06-15",
+        "sha512sum": "1759703447F5B085F88E3F2A35B89676CF3C166E60E02127569F97516C9D384B4B5886ADBE5AD00A1410F1E66FE1C710C9B4EC37BD6424D2A40ABEED0EEA2272",
+        "version": "1.1.0",
+        "url": "https://github.com/shieldeh/custom-Plugins/blob/master/release/fungusLooter-1.1.0.jar?raw=true",
         "requires": "0.0.1"
       }
     ]

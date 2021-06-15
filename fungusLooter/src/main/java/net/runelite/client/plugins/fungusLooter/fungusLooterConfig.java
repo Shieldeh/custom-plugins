@@ -42,10 +42,7 @@ public interface fungusLooterConfig extends Config
 		description = "Configure how the bot handles sleep delays",
 		position = 6
 	)
-	default boolean delayConfig()
-	{
-		return false;
-	}
+	String delayConfig = "delayConfig";
 
 	@Range(
 		min = 0,
@@ -123,16 +120,14 @@ public interface fungusLooterConfig extends Config
 		return false;
 	}
 
+
 	@ConfigSection(
 		keyName = "delayTickConfig",
 		name = "Game Tick Configuration",
 		description = "Configure how the bot handles game tick delays, 1 game tick equates to roughly 600ms",
 		position = 12
 	)
-	default boolean delayTickConfig()
-	{
-		return false;
-	}
+	String delayTickConfig = "delayTickConfig";
 
 	@Range(
 		min = 1,

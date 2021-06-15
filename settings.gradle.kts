@@ -1,13 +1,7 @@
 rootProject.name = "custom-plugins"
 
-//include(":leaguesChopper")
-//include(":leaguesZMI")
-//include(":leaguesPlanker")
-//include(":leaguesSand")
-//include(":prayerPOH")
-//include(":tokenFarmer")
+include(":prayerPOH")
 include(":fungusLooter")
-//include(":herbRunner")
 
 for (project in rootProject.children) {
     project.apply {
