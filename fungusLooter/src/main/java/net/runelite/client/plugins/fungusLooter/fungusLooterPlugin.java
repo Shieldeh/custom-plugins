@@ -269,10 +269,22 @@ public class fungusLooterPlugin extends Plugin
 			WidgetItem bloom = inventory.getWidgetItem(ItemID.SILVER_SICKLE_B);
 			utils.doItemActionGameTick(bloom, MenuAction.ITEM_THIRD_OPTION.getId(), 9764864, tickDelay());
 		}
+		if (inventory.containsItem(ItemID.IVANDIS_FLAIL))
+		{
+			WidgetItem bloom = inventory.getWidgetItem(ItemID.IVANDIS_FLAIL);
+			utils.doItemActionGameTick(bloom, MenuAction.ITEM_THIRD_OPTION.getId(), 9764864, tickDelay());
+		}	
+		if (inventory.containsItem(ItemID.BLISTERWOOD_FLAIL))
+		{
+			WidgetItem bloom = inventory.getWidgetItem(ItemID.BLISTERWOOD_FLAIL);
+			utils.doItemActionGameTick(bloom, MenuAction.ITEM_THIRD_OPTION.getId(), 9764864, tickDelay());
+		}
+
+
 		else
 		{
-			utils.sendGameMessage("You don't have a Silver Sickle (B). Plugin will now stop.");
-			log.info("You don't have a Silver Sickle (B). Plugin will now stop.");
+			utils.sendGameMessage("You don't have a Silver Sickle (B) or an Ivandis/Blisterwood Flail. Plugin will now stop.");
+			log.info("You don't have a Silver Sickle (B) or an Ivandis/Blisterwood Flail. Plugin will now stop.");
 			startBot = false;
 		}
 	}
