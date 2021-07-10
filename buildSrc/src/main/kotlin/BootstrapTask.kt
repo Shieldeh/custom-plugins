@@ -12,7 +12,6 @@ import java.nio.file.Paths
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 open class BootstrapTask : DefaultTask() {
@@ -59,7 +58,7 @@ open class BootstrapTask : DefaultTask() {
                             "version" to it.project.version,
                             "requires" to ProjectVersions.apiVersion,
                             "date" to formatDate(Date()),
-                            "url" to "https://github.com/shieldeh/custom-Plugins/blob/master/release/${it.project.name}-${it.project.version}.jar?raw=true",
+                            "url" to "https://github.com/shieldeh/custom-Plugins/tree/main/release/${it.project.name}-${it.project.version}.jar?raw=true",
                             "sha512sum" to hash(plugin.readBytes())
                     ))
 
