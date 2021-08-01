@@ -23,14 +23,14 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-version = "1.1.4"
+version = "1.1.5"
 
 project.extra["PluginName"] = "Fungus Looter"
 project.extra["PluginDescription"] = "Loots fungus, uses ardy cape to restore prayer, banks at zanaris."
 project.extra["ProjectUrl"] = "https://discord.gg/2j7aQQA8RA"
 
 dependencies {
-    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "4.0.7")
+    compileOnly(group = "com.openosrs.externals", name = "iutils", version = "4.3.1")
     compileOnly(group = "com.owain.externals", name = "chinbreakhandler", version = "0.0.16+")
 }
 

@@ -1,18 +1,1 @@
-[
-  {
-    "projectUrl": "https://discord.gg/2j7aQQA8RA",
-    "provider": "shieldeh",
-    "name": "Fungus Looter",
-    "description": "Loots fungus, uses ardy cape to restore prayer, banks at zanaris.",
-    "id": "funguslooter-plugin",
-    "releases": [
-      {
-        "date": "2021-07-10",
-        "sha512sum": "76FFDBCA34B8A8527EF3DE56985ACB7C647132D10E49E71A22A8F2646932C9A94DB6DCF15E066CA0665318E27377C9FFE197D1F2D00A694A326A0081FF93C5BF",
-        "version": "1.1.4",
-        "url": "https://github.com/shieldeh/custom-Plugins/tree/main/release/fungusLooter-1.1.4.jar?raw=true",
-        "requires": "0.0.1"
-      }
-    ]
-  }
-]
+[{"projectUrl":"https://discord.gg/9fGzEDR","provider":"shieldeh","name":"Fungus Looter","description":"Loots fungus, uses ardy cape to restore prayer, banks at zanaris.","id":"funguslooter-plugin","releases":[{"date":"2021-08-01","sha512sum":"454C34FA025BE0095AEC77A258AB804C9B06413AF03249196F5BCBBC449F015F97CBB59F3E05EFD56B29C1FB9F72E1EDA2B77399DCB621C94A2A9D8543B6C178","version":"1.1.5","url":"https://github.com/shieldeh/custom-plugins/blob/master/release/fungusLooter-1.1.5.jar?raw=true","requires":"0.0.1"}]}]

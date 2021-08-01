@@ -1,6 +1,4 @@
 import com.savvasdalkitsis.jsonmerger.JsonMerger
-import okhttp3.OkHttpClient
-import okhttp3.Request
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 import org.gradle.kotlin.dsl.extra
@@ -12,7 +10,7 @@ import java.nio.file.Paths
 import java.security.MessageDigest
 import java.text.SimpleDateFormat
 import java.util.*
-
+import kotlin.collections.ArrayList
 
 open class BootstrapTask : DefaultTask() {
 
@@ -24,33 +22,28 @@ open class BootstrapTask : DefaultTask() {
         return MessageDigest.getInstance("SHA-512").digest(file).fold("", { str, it -> str + "%02x".format(it) }).toUpperCase()
     }
 
-    private fun getBootstrap(): JSONArray? {
-        val client = OkHttpClient()
+    private fun getBootstrap(filename: String): JSONArray? {
+        val bootstrapFile = File(filename).readLines()
 
-        val url = "https://raw.githubusercontent.com/shieldeh/custom-Plugins/master/plugins.json"
-        val request = Request.Builder()
-                .url(url)
-                .build()
-
-        client.newCall(request).execute().use { response -> return JSONObject("{\"plugins\":${response.body!!.string()}}").getJSONArray("plugins") }
+        return JSONObject("{\"plugins\":$bootstrapFile}").getJSONArray("plugins")
     }
 
     @TaskAction
     fun boostrap() {
         if (project == project.rootProject) {
-            val bootstrapDir = File("${project.rootDir}/bootstrap")
-            val bootstrapReleaseDir = File("${project.rootDir}/bootstrap/release")
+            val bootstrapDir = File("${project.projectDir}")
+            val bootstrapReleaseDir = File("${project.projectDir}/release")
 
-            bootstrapDir.mkdirs()
             bootstrapReleaseDir.mkdirs()
 
             val plugins = ArrayList<JSONObject>()
-            val baseBootstrap = getBootstrap() ?: throw RuntimeException("Base bootstrap is null!")
+            val baseBootstrap = getBootstrap("$bootstrapDir/plugins.json")
+                    ?: throw RuntimeException("Base bootstrap is null!")
 
             project.subprojects.forEach {
                 if (it.project.properties.containsKey("PluginName") && it.project.properties.containsKey("PluginDescription")) {
                     var pluginAdded = false
-                    val plugin = it.project.tasks.get("jar").outputs.files.singleFile
+                    val plugin = it.project.tasks["jar"].outputs.files.singleFile
 
                     val releases = ArrayList<JsonBuilder>()
 
@@ -58,7 +51,7 @@ open class BootstrapTask : DefaultTask() {
                             "version" to it.project.version,
                             "requires" to ProjectVersions.apiVersion,
                             "date" to formatDate(Date()),
-                            "url" to "https://github.com/shieldeh/custom-Plugins/tree/main/release/${it.project.name}-${it.project.version}.jar?raw=true",
+                            "url" to "${project.rootProject.extra.get("GithubUrl")}/blob/master/release/${it.project.name}-${it.project.version}.jar?raw=true",
                             "sha512sum" to hash(plugin.readBytes())
                     ))
 
@@ -67,14 +60,14 @@ open class BootstrapTask : DefaultTask() {
                             "id" to nameToId(it.project.extra.get("PluginName") as String),
                             "description" to it.project.extra.get("PluginDescription"),
                             "provider" to it.project.extra.get("PluginProvider"),
-                            "projectUrl" to it.project.extra.get("ProjectUrl"),
+                            "projectUrl" to it.project.extra.get("ProjectSupportUrl"),
                             "releases" to releases.toTypedArray()
                     ).jsonObject()
 
                     for (i in 0 until baseBootstrap.length()) {
                         val item = baseBootstrap.getJSONObject(i)
 
-                        if (!item.get("id").equals(nameToId(it.project.extra.get("PluginName") as String))) {
+                        if (item.get("id") != nameToId(it.project.extra.get("PluginName") as String)) {
                             continue
                         }
 
